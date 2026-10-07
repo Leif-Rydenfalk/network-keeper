@@ -2,7 +2,7 @@
   "files": [
     {
       "path": "app/index.html",
-      "sha256": "0ad1b506a0ce78abc4835bbaa132f58aed652915bda2bbe5259bd1bfe7ddfb1b"
+      "sha256": "21ce5532cd1369de103293cff040671b1f2a08ab029310bff0799c7157b93dc3"
     },
     {
       "path": "app/aggregate.js",

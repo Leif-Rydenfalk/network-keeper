@@ -121,6 +121,14 @@
       "sha256": "4e694fabdf0aa3978bad8cd6fe0291e991082b3fdef8a0f921f030b24d200a47"
     },
     {
+      "path": "tools/collect_reddit.py",
+      "sha256": "f14e481009e22003c4c0bb86947ee6240b51211b9b83e3a3b2e13e837faa6be2"
+    },
+    {
+      "path": "tools/test_collect_reddit.py",
+      "sha256": "67efdef2b0ff566efd8ce2ff0d977300c16230a89006aec04260899354a66cb7"
+    },
+    {
       "path": "tools/test_find.cjs",
       "sha256": "369eed6de776758f6fd55fbdcb1ee23877b0dd39e4854c04683e9ea35812f4cc"
     },

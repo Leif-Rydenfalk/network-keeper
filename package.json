@@ -5,7 +5,7 @@
   "license": "AGPL-3.0-only",
   "scripts": {
     "start": "python3 -m http.server 8949 --bind 127.0.0.1 --directory app",
-    "test": "node tools/test_capture.cjs && node tools/test_aggregate.cjs && node tools/test_linkedin.cjs && node tools/test_find.cjs && node tools/test_discovery.cjs && node --test edge/test_worker.mjs"
+    "test": "node tools/test_capture.cjs && node tools/test_aggregate.cjs && node tools/test_linkedin.cjs && node tools/test_find.cjs && node tools/test_discovery.cjs && python3 -m unittest discover -s tools -p test_collect_reddit.py && node --test edge/test_worker.mjs"
   },
   "engines": {
     "node": ">=22.13.0"

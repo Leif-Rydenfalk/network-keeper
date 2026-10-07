@@ -570,7 +570,7 @@ function exportData() {
 // linkedin profile - and we tell you if we cant find you or if its ambiguous who you are ... other wise we find everything we
 // need online". The Find-you sheet does that on /api/people/resolve (read-only; a match only prefills the draft on this phone).
 // The profile is a draft on this phone until the person ticks "List me" and saves; the edit key stays here (and in the backup).
-const API = /(^|\.)ce-net\.com$/.test(location.hostname) ? "/api/people" : "https://ce-net.com/api/people";
+const API = "/api/people";
 const OPEN_TO = {work: "Looking for work", hiring: "Hiring", projects: "Open to projects", advice: "Happy to give advice"};
 let findMode = "people", findQ = "", findT = 0, findOpen = "", findRequest = 0;
 const me = () => (db.me = db.me || {draft: {name: "", headline: "", location: "", about: "", skills: [], experience: [], education: [], linkedin: "", email: "", open_to: []}, id: "", key: "", jobs: []});

@@ -18,6 +18,17 @@ const context = vm.createContext({
 });
 vm.runInContext(code, context);
 (async () => {
+  for (const hostname of ['localhost', 'independent.example', 'ce-net.com']) {
+    const calls = [];
+    const apiContext = vm.createContext({location: {hostname}, fetch: async (url, options) => {
+      calls.push({url, options}); return {ok:true, json:async()=>({ok:true})};
+    }});
+    vm.runInContext(html.slice(html.indexOf('const API ='), html.indexOf('function viewMe()')), apiContext);
+    await vm.runInContext('api("POST", "/profile", {consent:true, name:"Local"})', apiContext);
+    assert.equal(calls.length, 1);
+    assert.equal(new URL(calls[0].url, `https://${hostname}`).hostname, hostname);
+    assert.equal(calls[0].url, '/api/people/profile');
+  }
   const view = vm.runInContext('viewFind()', context);
   assert.ok(view.includes('data-act="postjob"'));
   assert.ok(view.includes('data-act="seekwork"'));

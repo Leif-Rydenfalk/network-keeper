@@ -10,7 +10,7 @@
     },
     {
       "path": "app/index.html",
-      "sha256": "b8a0b6b521047e99c0c3ce18b95b743b106cec546fe273ae11d6744d79c173a0"
+      "sha256": "8ada5d3a6ba8a3017f853dfbc6ca83f4d74f36ff092d4a5915d9d15b34e78d06"
     },
     {
       "path": "app/aggregate.js",
@@ -130,7 +130,7 @@
     },
     {
       "path": "tools/test_find.cjs",
-      "sha256": "369eed6de776758f6fd55fbdcb1ee23877b0dd39e4854c04683e9ea35812f4cc"
+      "sha256": "e963ad8d7e51b0fc34b41bdbd3738880810848b3cb5c2fbaa3054e747497df5e"
     },
     {
       "path": "tools/test_discovery.cjs",

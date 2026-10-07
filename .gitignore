@@ -1,0 +1,5 @@
+edge/wrangler.jsonc
+.wrangler/
+edge/.wrangler/
+node_modules/
+__pycache__/

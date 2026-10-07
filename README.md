@@ -69,6 +69,14 @@ The collector copies title metadata only. A failed fetch leaves the existing fee
 
 For other reviewed public sources, pass a JSON array to `node tools/import_discovery.cjs INPUT.json`. Each row needs `url`, `title`, `author`, `visibility: "public"`, an ISO `observed_at` timestamp, optional `published_at`, and `evidence` set to `page_read` or `search_result`. Only supported public X, Reddit and LinkedIn post URLs are accepted. Private messages and contact exports do not belong in this feed.
 
+To remove a source link and prevent later imports from restoring it:
+
+```sh
+node tools/import_discovery.cjs --remove-url 'https://x.com/author/status/123' app/discovery.json
+```
+
+Use the actual source URL. The feed keeps a canonical removal record across refreshes. Commit and publish the changed feed to apply the removal to your hosted instance. Imports retain at most 1,000 posts, and a lock prevents two writers from changing the same feed at once. If a process stops while holding a lock, inspect that process before clearing its lock file.
+
 ## Contribute
 
 Use the repository's issues for bugs and feature requests. Include the browser, what you expected and the steps that reproduce the problem. Remove personal contact details, exports and edit keys from screenshots and attachments.

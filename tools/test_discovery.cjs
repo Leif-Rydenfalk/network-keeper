@@ -22,3 +22,30 @@ assert.ok(!html.includes('<img')); assert.ok(!html.includes('<script>')); assert
 assert.ok(html.includes('Shared anonymously')); assert.ok(html.includes('External post'));
 assert.ok(D.card(D.normalize({...row,evidence:'search_result'})).includes('Search result only'));
 console.log('PASS: public-post allowlist, HTTPS and credentials, provenance, timestamps, canonical dedup, excerpt limits, filters, HTML escaping');
+
+// Exercise the CLI across imports, a removal, aliases, and a competing writer.
+const fs=require('node:fs'),path=require('node:path'),os=require('node:os');
+const {spawnSync}=require('node:child_process');
+const folder=fs.mkdtempSync(path.join(os.tmpdir(),'keeper-moderation-'));
+try {
+  const input=path.join(folder,'input.json'),output=path.join(folder,'feed.json');
+  const cli=path.join(__dirname,'import_discovery.cjs');
+  const run=(...args)=>spawnSync(process.execPath,[cli,...args],{encoding:'utf8'});
+  fs.writeFileSync(input,JSON.stringify([row,{...row,url:'https://x.com/demo/status/456'}]));
+  assert.equal(run(input,output).status,0);
+  assert.equal(run('--remove-url','https://twitter.com/alias/status/123',output).status,0);
+  assert.equal(run(input,output).status,0);
+  let feed=JSON.parse(fs.readFileSync(output,'utf8'));
+  assert.deepEqual(feed.removed,['x:123']);
+  assert.deepEqual(feed.posts.map(x=>x.id),['x:456']);
+  const saved=fs.readFileSync(output,'utf8');
+  fs.writeFileSync(input,JSON.stringify([{...row,visibility:'private'}]));
+  assert.notEqual(run(input,output).status,0);
+  assert.equal(fs.readFileSync(output,'utf8'),saved);
+  assert.equal(fs.existsSync(output+'.lock'),false);
+  fs.writeFileSync(output+'.lock','another writer');
+  assert.notEqual(run('--remove-url','https://x.com/demo/status/456',output).status,0);
+  assert.equal(fs.readFileSync(output,'utf8'),saved);
+  assert.equal(fs.readFileSync(output+'.lock','utf8'),'another writer');
+  console.log('PASS: removed posts stay removed after alias reimport; invalid input and competing writer preserve feed');
+} finally { fs.rmSync(folder,{recursive:true,force:true}); }

@@ -20,7 +20,7 @@ vm.runInContext(code, context);
 (async () => {
   for (const hostname of ['localhost', 'independent.example', 'ce-net.com']) {
     const calls = [];
-    const apiContext = vm.createContext({location: {hostname}, fetch: async (url, options) => {
+    const apiContext = vm.createContext({KeeperUsage:{create:()=>({})},localStorage:{},crypto:{},location: {hostname}, fetch: async (url, options) => {
       calls.push({url, options}); return {ok:true, json:async()=>({ok:true})};
     }});
     vm.runInContext(html.slice(html.indexOf('const API ='), html.indexOf('function viewMe()')), apiContext);

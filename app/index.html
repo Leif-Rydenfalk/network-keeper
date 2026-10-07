@@ -138,6 +138,7 @@ label{display:block;font-size:13px;font-weight:600;color:var(--sub);margin:18px 
 <script src="linkedin.js"></script>
 <script src="aggregate.js"></script>
 <script src="discovery.js"></script>
+<script src="usage.js"></script>
 <script src="capture.js"></script>
 <script src="capture-ui.js"></script>
 <script>
@@ -172,6 +173,7 @@ const CADENCE = {A: 14, B: 30, C: 90};
 const TINTS = [["#e8f0ff", "#1f4fb8"], ["#fdeee6", "#a7431a"], ["#e5f5ef", "#1d6b4c"], ["#f0ebff", "#5b3fb5"], ["#fdeaf1", "#a3285a"], ["#e7f4fa", "#17617f"], ["#f3f4e2", "#5b6516"], ["#fbf1df", "#8a5a10"]];
 
 let db = load();
+const usage = KeeperUsage.create({storage:{getItem:key=>localStorage.getItem(key),setItem:(key,value)=>localStorage.setItem(key,value)},request:(path,body)=>api("POST",path,body),uuid:()=>crypto.randomUUID()});
 let tab = "today";
 let query = "";
 
@@ -280,6 +282,8 @@ function viewSettings() {
   <div class="sec"><h3>Everything in one place</h3></div><div class="group"><button class="item plain" data-act="bring"><div class="grow">Bring in messages, mail and calls</div>${ICON.chev}</button></div>
   <div class="sec"><h3>Your data</h3></div><div class="group"><button class="item plain" data-act="export"><div class="grow">Export a backup</div>${ICON.chev}</button><label class="item plain" style="margin:0;text-transform:none;letter-spacing:0;font-size:17px;font-weight:400;color:var(--ink)"><div class="grow">Import a backup</div>${ICON.chev}<input type="file" accept="application/json" id="importFile" hidden></label><button class="item plain" data-act="demo"><div class="grow">Add sample people</div>${ICON.chev}</button><button class="item plain" data-act="wipe"><div class="grow" style="color:var(--red)">Delete everything</div></button></div>
   <div class="sec"><h3>Install</h3></div><div class="group"><div class="item plain"><div class="grow note" style="white-space:normal"><b style="color:var(--ink)">iPhone:</b> in Safari tap Share, then Add to Home Screen.<br><b style="color:var(--ink)">Android:</b> in Chrome tap the menu, then Install app.<br>It opens full screen and works offline.</div></div></div>
+  <div class="sec"><h3>Help improve the app</h3></div><div class="group"><button class="item plain" data-act="usage"><div class="grow">${usage.state().enabled ? "Stop sharing usage counts" : usage.state().pending ? "Retry stopping usage sharing" : "Share basic usage counts"}</div>${ICON.chev}</button></div>
+  <p class="note">Off by default. When enabled, saving a new contact sends a random browser ID and the date. Contact details stay here. Turning it off clears the saved dates; a hashed opt-out marker prevents delayed requests from restoring them.</p>
   <div class="sec"><h3>Community</h3></div><div class="group"><a class="item plain" href="https://www.reddit.com/r/cenet/" target="_blank" rel="noopener noreferrer"><div class="grow">Community and feedback on Reddit</div>${ICON.chev}</a></div>
   <p class="note" style="text-align:center;margin-top:26px"><a href="https://github.com/Leif-Rydenfalk/network-keeper" target="_blank" rel="noopener">Source · AGPL-3.0</a><br>Network Keeper v1 · an idea by Lola Tan</p>`;
 }
@@ -348,7 +352,7 @@ function sheetEdit(p) {
       metAt: readDateInput(val("f_met")), priority: pri, cadence: parseInt(val("f_cad")) || 0, channels: chs.filter(c => c.value.trim())});
     if (isNew) db.people.push(p);
     if (isNew && db.event && p.where === db.event.name) db.followups.push({id: uid(), person: p.id, text: "Follow up from " + db.event.name, due: calendarDaysAfter(today0(), 2), done: false});
-    if (!save()) { db = JSON.parse(before); if (!isNew) p = byId(p.id); return; } closeSheet(); render(); toast(isNew ? name + " added" : "Saved");
+    if (!save()) { db = JSON.parse(before); if (!isNew) p = byId(p.id); return; } if (isNew) void usage.recordContact(); closeSheet(); render(); toast(isNew ? name + " added" : "Saved");
   };
   const del = document.getElementById("delP");
   if (del) del.onclick = () => { if (!confirm("Delete " + p.name + "?")) return; db.people = db.people.filter(x => x.id !== p.id); db.followups = db.followups.filter(f => f.person !== p.id); save(); closeSheet(); render(); };
@@ -429,7 +433,7 @@ document.addEventListener("click", e => {
     return;
   }
   const a = e.target.closest("[data-act]");
-  if (a) { const k = a.dataset.act; if (k === "add") sheetEdit(null); if (k === "demo") demo(); if (k === "export") exportData(); if (k === "evstart") { const n = prompt("Which event?", "Maker Faire Shenzhen"); if (n) { db.event = {name: n.trim(), at: Date.now()}; save(); render(); toast("Everyone you add now is tagged " + n.trim()); } } if (k === "evend") { const n = db.event.name; db.event = null; save(); render(); toast("Ended " + n); } if (k === "mycard") sheetMyCard(); if (k === "bring") sheetBring(); if (k === "wipe" && confirm("Delete every person and follow-up on this phone?")) { db = {people: [], followups: []}; save(); render(); } return; }
+  if (a) { const k = a.dataset.act; if (k === "add") sheetEdit(null); if (k === "demo") demo(); if (k === "export") exportData(); if (k === "evstart") { const n = prompt("Which event?", "Maker Faire Shenzhen"); if (n) { db.event = {name: n.trim(), at: Date.now()}; save(); render(); toast("Everyone you add now is tagged " + n.trim()); } } if (k === "evend") { const n = db.event.name; db.event = null; save(); render(); toast("Ended " + n); } if (k === "mycard") sheetMyCard(); if (k === "bring") sheetBring(); if (k === "wipe" && confirm("Delete every person and follow-up on this phone?")) { void usage.disable().catch(() => {}); db = {people: [], followups: []}; save(); render(); } return; }
   const w = e.target.closest("[data-write]"); if (w) { sheetWrite(byId(w.dataset.write)); return; }
   const t = e.target.closest("[data-log],[data-fu],[data-edit],[data-merge]");
   if (t) { const p = byId(t.dataset.log || t.dataset.fu || t.dataset.edit || t.dataset.merge); if (t.dataset.log) sheetLog(p); else if (t.dataset.fu) sheetFollowup(p); else if (t.dataset.edit) sheetEdit(p); else sheetMerge(p); return; }
@@ -760,6 +764,12 @@ function sheetPostJob() {
 }
 document.addEventListener("click", async e => {
   const a = e.target.closest("[data-act]"); const k = a && a.dataset.act;
+  if (k === "usage") {
+    a.disabled=true;
+    try { if(usage.state().enabled || usage.state().pending) await usage.disable(); else await usage.enable(); render(); }
+    catch { render(); toast("Could not update sharing. Please retry when online."); }
+    return;
+  }
   if (k === "li") return sheetImport();
   if (k === "resolve") return sheetResolve();
   if (k === "mehand" || k === "meedit") return sheetMeEdit();

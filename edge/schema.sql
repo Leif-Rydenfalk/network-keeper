@@ -16,3 +16,12 @@ CREATE TABLE IF NOT EXISTS messages (
   ts INTEGER NOT NULL, to_kind TEXT NOT NULL, to_id TEXT NOT NULL, from_name TEXT NOT NULL, from_email TEXT NOT NULL,
   from_profile TEXT NOT NULL DEFAULT '', text TEXT NOT NULL);
 CREATE INDEX IF NOT EXISTS messages_to ON messages(to_kind, to_id, ts);
+
+-- Optional browser participation, not a verified count of distinct people.
+-- Opt-out keeps only a hashed suppression marker to reject delayed requests.
+CREATE TABLE IF NOT EXISTS usage_browsers (
+  client_hash TEXT PRIMARY KEY,
+  enabled INTEGER NOT NULL,
+  first_day TEXT,
+  last_day TEXT
+);

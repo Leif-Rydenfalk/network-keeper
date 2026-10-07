@@ -68,3 +68,29 @@ test('resolve: linkedin link matches the index, or reads the live public page, o
   const [bs, bad] = await call(env, 'POST', '/api/people/resolve', {linkedin: 'https://example.com/in/x'}, null, okWeb);
   assert.equal(bs, 400); assert.ok(/name or your LinkedIn link/.test(bad.error));
   const [, s] = await call(env, 'GET', '/api/people/search?q=mia'); assert.equal(s.people.length, 0); });
+
+
+test('optional usage: consent, strict payload, deduplication, hashed IDs and opt-out races', async () => {
+  const env={DB:d1()}, id='6e695093-a607-4672-990e-37ff15d23abd';
+  const event={client_id:id,event:'contact_saved',consent:true};
+  const count=async()=>await env.DB.prepare('SELECT COUNT(*) AS n FROM usage_browsers WHERE enabled=1').first();
+  assert.equal((await call(env,'POST','/api/people/usage',{...event,consent:false}))[0],400);
+  assert.equal((await call(env,'POST','/api/people/usage',{...event,contact_name:'Private name'}))[0],400);
+  assert.equal((await count()).n,0);
+  for(let i=0;i<2;i++) assert.equal((await call(env,'POST','/api/people/usage',event))[0],200);
+  assert.equal((await count()).n,1);
+  const row=await env.DB.prepare('SELECT * FROM usage_browsers').first();
+  assert.equal(row.client_hash.length,64);assert.ok(!JSON.stringify(row).includes(id));
+  assert.match(row.first_day,/^\d{4}-\d{2}-\d{2}$/);
+  assert.deepEqual(Object.keys(row).sort(),['client_hash','enabled','first_day','last_day']);
+  assert.equal((await call(env,'POST','/api/people/usage/opt-out',{client_id:id}))[0],200);
+  assert.equal((await count()).n,0);
+  // A delayed event must not recreate data after the user opts out.
+  await call(env,'POST','/api/people/usage',event);
+  const stopped=await env.DB.prepare('SELECT * FROM usage_browsers').first();
+  assert.equal(stopped.enabled,0);assert.equal(stopped.first_day,null);assert.equal(stopped.last_day,null);
+  const newId='425f1b1d-12ac-4d60-9a10-6b2a2aa643ee';
+  await call(env,'POST','/api/people/usage/opt-out',{client_id:newId});
+  await call(env,'POST','/api/people/usage',{...event,client_id:newId});
+  assert.equal((await count()).n,0);
+});

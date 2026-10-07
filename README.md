@@ -55,6 +55,16 @@ Open the URL returned by Wrangler. Your instance has its own profiles, jobs and 
 
 Profiles require explicit listing consent. Profile and job edit keys are stored in the owner's browser and exported backup. Public search hides reply email addresses. Keep backups of your database and browser data; losing an edit key can prevent you from managing the corresponding entry.
 
+## Optional usage counts
+
+Available in this source revision. The hosted rollout is pending as of October 8, 2026.
+
+Settings includes an off-by-default usage switch. If you enable it, saving a new contact sends a random browser ID and a contact-save event to your instance. The backend stores a hash of that ID and the first and latest UTC dates. Names, notes, contact channels and imported messages are excluded. Sample contacts and bulk imports do not trigger this event.
+
+Turning sharing off clears the saved dates and keeps a hashed opt-out marker, so a delayed request cannot restore them. If the request fails, the browser stops sending events and offers a retry. These records count participating browsers. They do not verify distinct people, real contacts or total app users.
+
+For an existing installation, run the updated `edge/schema.sql` before deploying the updated Worker. The schema adds `usage_browsers` without changing existing profile, job or message tables.
+
 ## Refresh discovery links
 
 Discovery is a bounded collection of public links, not a complete copy of any platform. Cards retain original author names where available, source URLs and observation dates. The person sharing the link is anonymous. Third-party post text remains its author's work and is not relicensed by this repository.

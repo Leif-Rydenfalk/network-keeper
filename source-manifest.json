@@ -1,6 +1,10 @@
 {
   "files": [
     {
+      "path": "app/usage.js",
+      "sha256": "1f7e478b8677c025fd50aff1b67a5bd3e12cad749481fa7eb85981feaba9ae69"
+    },
+    {
       "path": "app/discovery.js",
       "sha256": "d2cb2bacfc8e17bfec8b424fad8c50dc134b04726a236d00b4c1234f9cfba092"
     },
@@ -10,7 +14,7 @@
     },
     {
       "path": "app/index.html",
-      "sha256": "3e3fefedde546950228d5e4a67ef0a55bab4a6f1b85ed12d4a2c2a598a3b84b5"
+      "sha256": "adc5fa153750e1f8235c0ccb3e17d3dee86c3c18c829de0b168cdfb5deadddf8"
     },
     {
       "path": "app/aggregate.js",
@@ -42,7 +46,7 @@
     },
     {
       "path": "app/sw.js",
-      "sha256": "aa1bfbf91a588a7f649feef13599adcbb8507e9fc437439fbf92716a8303fb6f"
+      "sha256": "f7a007898cf40ef28a9bbed21edf5f3367942cfde91515f83d213e56972bf394"
     },
     {
       "path": "app/LICENSE",
@@ -98,15 +102,19 @@
     },
     {
       "path": "edge/worker.mjs",
-      "sha256": "9c27522771b82b77d6802aabf4ab7d16268da228e7e0e92444522db291fcd715"
+      "sha256": "a9c123d68af029b1ca66dbf009756466ba2b628de12180d91b7090083c9c2151"
     },
     {
       "path": "edge/schema.sql",
-      "sha256": "e5a40e4a4b08c462a67e827270108abec589c678d689ef90036814ed192c7204"
+      "sha256": "18c7e25b2b51cd45ac6fa22cb10d75cffc17eaceb0dcf8fc275dd86aac735e27"
     },
     {
       "path": "edge/test_worker.mjs",
-      "sha256": "946ac66560ad7d0b794581028d8b8b2ca4a3be58a3646560383744221ca78ab6"
+      "sha256": "28c18881d9589c764d6e2e2cc5a5f21c03993b7dabb690364e9fcf1c23868fb4"
+    },
+    {
+      "path": "tools/test_usage.cjs",
+      "sha256": "8988e97d78b2c46fb9af8980bb77bcf31b0500ff824c42e1855b6d7ed08c9a72"
     },
     {
       "path": "tools/test_capture.cjs",
@@ -130,7 +138,7 @@
     },
     {
       "path": "tools/test_find.cjs",
-      "sha256": "e963ad8d7e51b0fc34b41bdbd3738880810848b3cb5c2fbaa3054e747497df5e"
+      "sha256": "29554171f401c3df1e5f390a274c7bc29ecde544e25e031713186b9a58136f8d"
     },
     {
       "path": "tools/test_discovery.cjs",

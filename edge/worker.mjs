@@ -67,6 +67,20 @@ const like = ts => ts.map(t => '%' + t.replace(/[%_]/g, '') + '%');
 export async function handle(req, env, web = fetch) {
   const url = new URL(req.url); const path = url.pathname.replace(/\/+$/, ''); const m = req.method; const now = Math.floor(Date.now() / 1000);
   if (m === 'OPTIONS') return J({});
+  if(m === 'POST' && (path === '/api/people/usage' || path === '/api/people/usage/opt-out')) {
+    const b=await body(req,512);
+    const allowed=path.endsWith('/opt-out')?['client_id']:['client_id','event','consent'];
+    if(!b || typeof b.client_id!=='string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(b.client_id) || Object.keys(b).some(k=>!allowed.includes(k))) return J({error:'invalid usage record'},400);
+    const hash=await sha('usage:'+b.client_id.toLowerCase());
+    if(path.endsWith('/opt-out')) {
+      await env.DB.prepare('INSERT INTO usage_browsers(client_hash,enabled,first_day,last_day) VALUES(?,0,NULL,NULL) ON CONFLICT(client_hash) DO UPDATE SET enabled=0,first_day=NULL,last_day=NULL').bind(hash).run();
+      return J({ok:true});
+    }
+    if(b.consent!==true || b.event!=='contact_saved') return J({error:'usage sharing requires consent'},400);
+    const day=new Date().toISOString().slice(0,10);
+    await env.DB.prepare('INSERT INTO usage_browsers(client_hash,enabled,first_day,last_day) VALUES(?,1,?,?) ON CONFLICT(client_hash) DO UPDATE SET last_day=excluded.last_day WHERE usage_browsers.enabled=1').bind(hash,day,day).run();
+    return J({ok:true});
+  }
   // create or update my profile. Opt-in is explicit: consent must be true, or nothing is stored.
   if (m === 'POST' && path === '/api/people/profile') {
     const b = await body(req, 40000); if (!b) return J({error: 'bad json'}, 400);

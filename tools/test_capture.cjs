@@ -1,0 +1,20 @@
+const assert=require('node:assert/strict');
+const C=require('../app/capture.js');
+const vcard='BEGIN:VCARD\r\nVERSION:3.0\r\nFN:Jamie Tan\r\nORG:Example Ltd\r\nTITLE:Designer\r\nEMAIL:jamie@example.com\r\nTEL;TYPE=CELL:+65 8123 4567\r\nURL:https://linkedin.com/in/jamie\r\nEND:VCARD';
+const p=C.parseText(vcard);assert.equal(p.name,'Jamie Tan');assert.equal(p.company,'Example Ltd');assert.equal(p.channels.length,3);
+assert.equal(C.parseText('BEGIN:VCARD\nFN:谭嘉欢\nEND:VCARD').name,'谭嘉欢');
+assert.equal(C.parseText('BEGIN:VCARD\r\nFN:Jamie\r\n  Tan\r\nEND:VCARD').name,'Jamie Tan');
+assert.throws(()=>C.parseText(vcard+'\n'+vcard));assert.throws(()=>C.parseText('x'.repeat(32001)));
+const b=C.parseText('Name: Jamie Tan\nCompany: Example Ltd\nRole: Designer\njamie@example.com\n+65 8123 4567\nWeChat: jamie_demo');
+assert.equal(b.name,'Jamie Tan');assert.equal(b.company,'Example Ltd');assert.equal(b.role,'Designer');assert.equal(b.channels.length,3);
+const data=s=>new DataView(new TextEncoder().encode(s).buffer);
+assert.equal(C.parseNdef({records:[{recordType:'mime',mediaType:'text/vcard',data:data(vcard)}]}).name,'Jamie Tan');
+assert.equal(C.parseNdef({records:[{recordType:'text',encoding:'utf-8',data:data('姓名：谭嘉欢')}]}).name,'谭嘉欢');
+assert.match(C.parseNdef({records:[{recordType:'url',data:data('https://example.com/card')}]}).notes,/example.com/);
+for(const u of ['javascript:alert(1)','data:text/html,hello','file:///etc/passwd','https://user:password@example.com']){assert.equal(C.safeURL(u),'');assert.throws(()=>C.parseNdef({records:[{recordType:'url',data:data(u)}]}));}
+assert.throws(()=>C.parseNdef({records:[{recordType:'unknown',data:data('abc')}]}));
+assert.throws(()=>C.parseNdef({records:[{recordType:'mime',mediaType:'text/html',data:data('<h1>hi</h1>')}]}));
+assert.throws(()=>C.parseNdef({records:[{recordType:'text',data:data('a'.repeat(32001))}]}));
+assert.throws(()=>C.parseNdef({records:[{recordType:'text',data:new Uint8Array([0xff])}]}));
+assert(!C.isPhoto('https://example.com/track.jpg'));assert(!C.isPhoto('data:image/svg+xml,<svg/>'));assert(C.isPhoto('data:image/jpeg;base64,YQ=='));
+console.log('PASS: vCard, Unicode, folding, card fields, NDEF text/MIME/URL, limits, malformed encoding, unsafe URLs, photo allowlist');

@@ -1,0 +1,124 @@
+{
+  "files": [
+    {
+      "path": "app/index.html",
+      "sha256": "0ad1b506a0ce78abc4835bbaa132f58aed652915bda2bbe5259bd1bfe7ddfb1b"
+    },
+    {
+      "path": "app/aggregate.js",
+      "sha256": "d05cb033403266d21ab197979a90d5a81d2050e82fffc4383b33b93a88821082"
+    },
+    {
+      "path": "app/capture-ui.js",
+      "sha256": "126d655068766eb94baf64f64db0de75b9787fb023c5b322b0b4f46bda177eb1"
+    },
+    {
+      "path": "app/capture.js",
+      "sha256": "2a851ced7524b366810627436515fb56d630969502dc5e5279cd4dafa8531e3c"
+    },
+    {
+      "path": "app/linkedin.js",
+      "sha256": "cda5bfc85b26cd516e24fe8447c909c81257c998c096d21c7fb00336688a6d77"
+    },
+    {
+      "path": "app/icon-192.png",
+      "sha256": "3e872fbf49ac76edf3f2e8033b60701fdde73592fc64d15de13135866cf32035"
+    },
+    {
+      "path": "app/icon-512.png",
+      "sha256": "5d74ebc058dc0bfd55cb8300731927fc3343d3357c091f883154264877ce6ae3"
+    },
+    {
+      "path": "app/manifest.webmanifest",
+      "sha256": "b6b9408bc3b4b78ca67c1e1382404299439815d6cc475b7cbb93f6c1f33eb09e"
+    },
+    {
+      "path": "app/sw.js",
+      "sha256": "b6b61076f6a1594636f826b7c48c8f08cc96fcf2eaf84ee1ce74f416b283b187"
+    },
+    {
+      "path": "app/LICENSE",
+      "sha256": "8d56b405468aad11f87ab5763f901e276e08d9646ff5c8481b1762b6b789e9ed"
+    },
+    {
+      "path": "app/vendor/ocr/CORE-LICENSE",
+      "sha256": "c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08"
+    },
+    {
+      "path": "app/vendor/ocr/TESSERACT-LICENSE",
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    },
+    {
+      "path": "app/vendor/ocr/chi_sim.traineddata.gz",
+      "sha256": "b8a23f10c7de500891eb458a8adc9cc58ab7f242f08b7d149f5e9aea4ad5db7c"
+    },
+    {
+      "path": "app/vendor/ocr/chi_tra.traineddata.gz",
+      "sha256": "11fe2610dab05d8a880d02f193ce70203f4c4bbe061b987d5529a2c038a22743"
+    },
+    {
+      "path": "app/vendor/ocr/eng.traineddata.gz",
+      "sha256": "45b4cb346724ac1774f1c36f42f182b887bcdb28ebe63e6fff90ac41f3fcff91"
+    },
+    {
+      "path": "app/vendor/ocr/sources.json",
+      "sha256": "8c9a7abc023ca6f98383da2a7c404d32691c1f162ad0cf3fbfbf124fc4166996"
+    },
+    {
+      "path": "app/vendor/ocr/tesseract-core-lstm.wasm.js",
+      "sha256": "775a35df6f2ae100e02609443e6bd5cafcd07983dd6175454ca4a432a7730687"
+    },
+    {
+      "path": "app/vendor/ocr/tesseract-core-simd-lstm.wasm.js",
+      "sha256": "9d7c43fb206dc9f48475228b46bf35f888fa9e6259da2e67d5a75c77049f2dc7"
+    },
+    {
+      "path": "app/vendor/ocr/tesseract.min.js",
+      "sha256": "10fff78484067759c43028a02a72d76d0b90eb17302bb23b58a9ec5410bc928b"
+    },
+    {
+      "path": "app/vendor/ocr/tesseract.min.js.LICENSE.txt",
+      "sha256": "cdf963ced7d25a0f98901a547647b4d6e2dbe0197fd78c87a059a87b0e542fe2"
+    },
+    {
+      "path": "app/vendor/ocr/worker.min.js",
+      "sha256": "38645599043239c0eb6db08a6504a92dcdc292200535f3e9339cd77c4443b842"
+    },
+    {
+      "path": "app/vendor/ocr/worker.min.js.LICENSE.txt",
+      "sha256": "45f54171aeaa1d10c0c1a66f374b7bba1f02472b1487fbe892eec04f840002ac"
+    },
+    {
+      "path": "edge/worker.mjs",
+      "sha256": "9c27522771b82b77d6802aabf4ab7d16268da228e7e0e92444522db291fcd715"
+    },
+    {
+      "path": "edge/schema.sql",
+      "sha256": "e5a40e4a4b08c462a67e827270108abec589c678d689ef90036814ed192c7204"
+    },
+    {
+      "path": "edge/test_worker.mjs",
+      "sha256": "946ac66560ad7d0b794581028d8b8b2ca4a3be58a3646560383744221ca78ab6"
+    },
+    {
+      "path": "tools/test_capture.cjs",
+      "sha256": "271fb27cdf8ab40a4bcc8ce49677180fc25d9efdad9a7d584c5c22940b8a02de"
+    },
+    {
+      "path": "tools/test_aggregate.cjs",
+      "sha256": "6db4192816b9e48c0d25c1d6a6b793f27f54ae569d31248149b3563244fedba9"
+    },
+    {
+      "path": "tools/test_linkedin.cjs",
+      "sha256": "4e694fabdf0aa3978bad8cd6fe0291e991082b3fdef8a0f921f030b24d200a47"
+    },
+    {
+      "path": "tools/test_find.cjs",
+      "sha256": "369eed6de776758f6fd55fbdcb1ee23877b0dd39e4854c04683e9ea35812f4cc"
+    },
+    {
+      "path": "tools/vendor_ocr.py",
+      "sha256": "a27fce745fe0f978d6ef835986576b5746293c12ef84836688437f9c8b0c627d"
+    }
+  ]
+}

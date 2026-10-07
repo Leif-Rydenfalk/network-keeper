@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Keeper">
+<title>Network Keeper</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{
+  --bg:#f5f5f7;--card:#fff;--ink:#1d1d1f;--sub:#6e6e73;--faint:#aeaeb2;--line:rgba(60,60,67,.12);--accent:#1d1d1f;--blue:#0a6cff;
+  --red:#d70015;--field:#f2f2f4;--radius:16px;--bar:rgba(255,255,255,.82);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#000;--card:#1c1c1e;--ink:#f5f5f7;--sub:#98989d;--faint:#636366;--line:rgba(235,235,245,.12);--accent:#f5f5f7;--blue:#3d8bff;--red:#ff453a;--field:#2c2c2e;--bar:rgba(28,28,30,.82);
+}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.35 -apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer}
+header{padding:calc(env(safe-area-inset-top) + 22px) 20px 6px;max-width:640px;margin:0 auto}
+header h1{margin:0;font-size:34px;font-weight:700;letter-spacing:-.025em}
+header p{margin:4px 0 0;color:var(--sub);font-size:15px}
+main{padding:0 16px calc(110px + env(safe-area-inset-bottom));max-width:640px;margin:0 auto}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;display:flex;justify-content:center;gap:8px;background:var(--bar);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-top:.5px solid var(--line);padding:6px 0 calc(6px + env(safe-area-inset-bottom))}
+nav.tabs button{flex:1;max-width:72px;border:0;background:none;color:var(--faint);font-size:11px;font-weight:600;padding:4px 0;display:flex;flex-direction:column;align-items:center;gap:3px}
+nav.tabs button svg{width:25px;height:25px}
+nav.tabs button.on{color:var(--ink)}
+.group{background:var(--card);border-radius:var(--radius);overflow:hidden;margin:8px 0 6px}
+.item{display:flex;align-items:center;gap:13px;padding:12px 16px;position:relative;width:100%;text-align:left;border:0;background:none}
+.item+.item::before{content:"";position:absolute;top:0;left:73px;right:0;border-top:.5px solid var(--line)}
+.item.plain+.item.plain::before{left:16px}
+.item:active{background:var(--field)}
+.av{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:16px;letter-spacing:.01em}
+.grow{flex:1;min-width:0}
+.name{font-weight:600;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meta{color:var(--sub);font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pri{color:var(--faint);font-size:12px;font-weight:600;margin-left:6px;vertical-align:1px}
+.when{font-size:14px;color:var(--sub);white-space:nowrap;text-align:right}
+.when.over{color:var(--red);font-weight:600}
+.chev{color:var(--faint);flex:none}
+.sec{display:flex;justify-content:space-between;align-items:baseline;margin:26px 4px 2px}
+.sec h3{margin:0;font-size:20px;font-weight:700;letter-spacing:-.01em}
+.sec span{color:var(--sub);font-size:14px}
+.summary{color:var(--sub);font-size:15px;margin:2px 4px 0}
+.summary b{color:var(--ink);font-weight:600}
+.empty{text-align:center;padding:48px 24px;color:var(--sub)}
+.empty h2{color:var(--ink);font-size:22px;margin:14px 0 6px}
+.btn{border:0;border-radius:12px;padding:13px 18px;font-size:16px;font-weight:600;background:var(--ink);color:var(--bg)}
+.btn.soft{background:var(--field);color:var(--ink)}
+.btn.link{background:none;color:var(--blue);padding:13px 6px}
+.btn.danger{background:none;color:var(--red);padding:13px 6px}
+.btn.wide{width:100%}
+.fab{position:fixed;right:20px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:7;width:56px;height:56px;border-radius:50%;border:0;background:var(--ink);color:var(--bg);display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.fab svg{width:24px;height:24px}
+input,textarea,select{width:100%;font-family:inherit;font-size:17px;line-height:1.3;color:var(--ink);background:var(--field);border:0;border-radius:11px;padding:12px 13px;outline:none;-webkit-appearance:none;appearance:none}
+input:focus,textarea:focus,select:focus{box-shadow:0 0 0 2px var(--blue) inset}
+textarea{min-height:84px;resize:vertical}
+select{padding-right:30px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none' stroke='%238e8e93' stroke-width='1.8'%3E%3Cpath d='m1 1.5 5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-size:11px;background-position:right 11px center}
+label{display:block;font-size:13px;font-weight:600;color:var(--sub);margin:18px 2px 7px;text-transform:uppercase;letter-spacing:.04em}
+.seg{display:flex;background:var(--field);border-radius:10px;padding:2px}
+.seg button{flex:1;border:0;background:none;padding:8px 0;border-radius:8px;font-size:14px;font-weight:600;color:var(--sub)}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.32);z-index:20;opacity:0;pointer-events:none;transition:opacity .25s}
+.sheet-bg.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:21;background:var(--card);border-radius:20px 20px 0 0;max-height:93vh;overflow:auto;padding:6px 20px calc(24px + env(safe-area-inset-bottom));transform:translateY(105%);transition:transform .3s cubic-bezier(.2,.8,.2,1);max-width:640px;margin:0 auto}
+.sheet.open{transform:none}
+.grab{width:36px;height:5px;border-radius:3px;background:var(--line);margin:4px auto 14px}
+.sheet h2{margin:0;font-size:24px;letter-spacing:-.015em}
+.profile{text-align:center;padding:4px 0 6px}
+.profile .av{width:76px;height:76px;font-size:27px;margin:0 auto 10px}
+.profile .meta{white-space:normal}
+.quick{display:flex;justify-content:center;gap:10px;margin:16px 0 4px;flex-wrap:wrap}
+.qa{display:flex;flex-direction:column;align-items:center;gap:6px;border:0;background:none;width:64px;font-size:12px;color:var(--sub);font-weight:500}
+.qa i{width:46px;height:46px;border-radius:50%;background:var(--field);display:grid;place-items:center;color:var(--ink)}
+.qa svg{width:21px;height:21px}
+.qa.primary i{background:var(--ink);color:var(--bg)}
+.chrow{display:flex;gap:8px;margin-bottom:8px}
+.chrow select{width:40%;flex:none}
+.facts{background:var(--field);border-radius:14px;margin-top:16px}
+.fact{padding:11px 14px;position:relative}
+.fact+.fact::before{content:"";position:absolute;top:0;left:14px;right:0;border-top:.5px solid var(--line)}
+.fact small{display:block;color:var(--sub);font-size:13px;margin-bottom:2px}
+.fact div{white-space:pre-wrap}
+.hist{margin-top:6px}
+.hist .h{display:flex;gap:12px;padding:10px 2px}
+.hist .h i{flex:none;width:8px;height:8px;border-radius:50%;background:var(--faint);margin-top:7px}
+.hist small{color:var(--sub);display:block;font-size:13px}
+.search input{background:var(--field);padding-left:38px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238e8e93' stroke-width='2.2'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-size:18px;background-position:12px 50%}
+.search{margin:12px 0 4px}
+.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 12px);transform:translate(-50%,-20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-size:14px;font-weight:500;z-index:30;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.check{flex:none;width:24px;height:24px;border-radius:50%;border:1.6px solid var(--faint);background:none;padding:0}
+.check.done{background:var(--ink);border-color:var(--ink)}
+.actions{display:flex;gap:10px;margin-top:22px}
+.actions .btn{flex:1}
+.row{display:flex;gap:10px}
+.note{color:var(--sub);font-size:14.5px;line-height:1.45}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{background:var(--field);border-radius:99px;padding:5px 11px;font-size:14px;color:var(--ink)}
+.tick{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;font-size:16px;text-transform:none;letter-spacing:0;color:var(--ink);font-weight:400;margin:0}
+.tick input{width:22px;height:22px;flex:none;margin-top:1px;accent-color:var(--ink);-webkit-appearance:auto;appearance:auto;padding:0}
+.role{background:var(--field);border-radius:12px;padding:10px;margin-bottom:8px}
+.role input{background:var(--card);margin-bottom:6px;padding:9px 11px;font-size:16px}
+.role input:last-of-type{margin-bottom:0}
+.badge{display:inline-block;font-size:12px;font-weight:600;border-radius:6px;padding:2px 7px;background:var(--field);color:var(--sub);margin-left:6px;vertical-align:2px}
+.badge.live{background:#e5f5ef;color:#1d6b4c}
+/* Capture controls share the existing app visual language. */
+.editbar{position:sticky;top:0;background:var(--card);z-index:2;padding:4px 0}
+.capture-box{background:var(--field);border-radius:14px;padding:14px;margin:10px 0 16px}
+.capture-box .note{margin:8px 0;font-size:14px}
+.capture-actions{display:grid;gap:8px}.capture-actions .btn{background:var(--card);text-align:left}
+.capture-box details{margin-top:12px}.capture-box summary{cursor:pointer;font-size:14px;color:var(--blue);padding:8px 0}
+.capture-box input,.capture-box textarea,.capture-box select{background-color:var(--card)}
+#cardPreview{width:100%;max-height:220px;object-fit:contain;margin:12px 0}
+#photoPreview{width:80px;height:80px;object-fit:cover;border-radius:50%;margin-top:12px;vertical-align:middle}
+#ocrRead,#nfcStop{margin-top:10px}.av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.capture-guide{padding-left:22px}.capture-guide li{margin:16px 0}
+</style>
+</head>
+<body>
+<header><h1 id="title">Today</h1><p id="subtitle"></p></header>
+<main id="view"></main>
+<button class="fab" id="fab" aria-label="Add person"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+<nav class="tabs">
+  <button data-tab="today" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Today</button>
+  <button data-tab="inbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 13.5 6 5h12l2.5 8.5V19a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19v-5.5z"/><path d="M3.5 13.5H8l1.5 2.5h5l1.5-2.5h4.5"/></svg>All</button>
+  <button data-tab="people"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20.5c1-4 4-6 7.5-6s6.5 2 7.5 6"/></svg>People</button>
+  <button data-tab="find"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg>Find</button>
+  <button data-tab="me"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="4.5" width="17" height="15" rx="3"/><circle cx="9.5" cy="11" r="2.4"/><path d="M6 16.5c.6-1.8 2-2.7 3.5-2.7s2.9.9 3.5 2.7M15 10h3M15 13.5h3"/></svg>Me</button>
+  <button data-tab="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Settings</button>
+</nav>
+<div class="sheet-bg" id="bg"></div>
+<div class="sheet" id="sheet"><div class="grab"></div><div id="sheetBody"></div></div>
+<div class="toast" id="toast"></div>
+<script src="linkedin.js"></script>
+<script src="aggregate.js"></script>
+<script src="capture.js"></script>
+<script src="capture-ui.js"></script>
+<script>
+"use strict";
+// Network Keeper v1: one card per person across channels, and a daily list of who to reach out to.
+// Data stays on this phone (localStorage); export/import JSON in Settings. Brief: ../docs/BRIEF.md.
+const KEY = "network-keeper.v1";
+const DAY = 86400000;
+const ICON = {
+  linkedin: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.5 8.5h-3V20h3V8.5zM5 3.6a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6zM20.5 13.4c0-3.1-1.7-5.1-4.4-5.1-1.5 0-2.5.8-2.9 1.6V8.5h-3V20h3v-6c0-1.6.7-2.8 2.2-2.8s2.1 1.1 2.1 2.8v6h3v-6.6z"/></svg>',
+  wechat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9.5 4C5.4 4 2.5 6.6 2.5 9.7c0 1.8 1 3.3 2.5 4.4L4.4 16.5l2.8-1.4c.7.2 1.5.3 2.3.3"/><path d="M15 9c3.6 0 6.5 2.4 6.5 5.2 0 1.5-.8 2.8-2 3.8l.5 2-2.3-1.2c-.8.3-1.7.4-2.7.4-3.6 0-6.5-2.3-6.5-5S11.4 9 15 9z"/></svg>',
+  whatsapp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3.5 20.5l1.3-4.2A8.5 8.5 0 1 1 8 19.4l-4.5 1.1z"/><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5l1-1.6-2-1-1 .8c-1-.5-2-1.5-2.5-2.5l.8-1-1-2L9 8.5z" stroke-width="1.4"/></svg>',
+  email: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="m4 7 8 6 8-6"/></svg>',
+  phone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M6.5 3.5h3l1.5 4-2 1.3a10 10 0 0 0 6.2 6.2l1.3-2 4 1.5v3a2 2 0 0 1-2 2A16.5 16.5 0 0 1 4.5 5.5a2 2 0 0 1 2-2z"/></svg>',
+  note: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="9" r="3.5"/><circle cx="16.5" cy="10" r="2.5"/><path d="M3 19c.8-3 3.2-4.6 6-4.6s5.2 1.6 6 4.6M15 14.6c2.6 0 4.6 1.5 5.4 4"/></svg>',
+  log: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
+  bell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15L6 16.5zM10 20.5h4"/></svg>',
+  edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16v4z"/></svg>',
+  merge: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v4a6 6 0 0 0 6 6h0a6 6 0 0 1 6 6M18 4v4a6 6 0 0 1-3 5.2M12 14v6"/></svg>',
+  chev: '<svg class="chev" width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m1 1 6 6-6 6"/></svg>',
+};
+ICON.x = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 4 14 16M19 4 5 20"/></svg>';
+const CHANNELS = {
+  x: {label: "X", ph: "@name or x.com/name"},
+  linkedin: {label: "LinkedIn", ph: "linkedin.com/in/name"},
+  wechat: {label: "WeChat", ph: "WeChat ID"},
+  whatsapp: {label: "WhatsApp", ph: "+65 9123 4567"},
+  email: {label: "Email", ph: "name@company.com"},
+  phone: {label: "Phone", ph: "+86 138 0000 0000"},
+};
+const CADENCE = {A: 14, B: 30, C: 90};
+const TINTS = [["#e8f0ff", "#1f4fb8"], ["#fdeee6", "#a7431a"], ["#e5f5ef", "#1d6b4c"], ["#f0ebff", "#5b3fb5"], ["#fdeaf1", "#a3285a"], ["#e7f4fa", "#17617f"], ["#f3f4e2", "#5b6516"], ["#fbf1df", "#8a5a10"]];
+
+let db = load();
+let tab = "today";
+let query = "";
+
+function load() {
+  try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.people) return s; } catch (e) {}
+  return {people: [], followups: []};
+}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(db)); return true; } catch (e) { toast("Not saved: storage is full or unavailable. Export a backup in Settings."); return false; } }
+const uid = () => Math.random().toString(36).slice(2, 10);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
+const today0 = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime(); };
+const dateInput = t => { const d = new Date(t); return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, "0"), String(d.getDate()).padStart(2, "0")].join("-"); };
+const readDateInput = s => s ? new Date(s + "T00:00:00").getTime() : today0();
+const calendarDaysAfter = (t, days) => { const d = new Date(t); d.setDate(d.getDate() + days); return d.getTime(); };
+const fmtDate = t => new Date(t).toLocaleDateString("en-GB", {day: "numeric", month: "short"});
+const initials = n => n.trim().split(/\s+/).slice(0, 2).map(w => w[0] || "").join("").toUpperCase() || "?";
+const tint = id => TINTS[[...id].reduce((a, c) => a + c.charCodeAt(0), 0) % TINTS.length];
+const plural = (n, w) => n + " " + w + (n === 1 ? "" : "s");
+
+function lastTouch(p) { return p.touches.length ? Math.max(...p.touches.map(t => t.at)) : p.metAt || p.created; }
+function cadence(p) { return p.cadence || CADENCE[p.priority] || 30; }
+function nextDue(p) { return lastTouch(p) + cadence(p) * DAY; }
+function daysOver(p) { return Math.floor((today0() - nextDue(p)) / DAY); }
+function rank(p) { return {A: 0, B: 1, C: 2}[p.priority] ?? 1; }
+function lastOf(p) { return p.touches.length ? p.touches.reduce((a, b) => a.at > b.at ? a : b) : null; }
+
+function channelHref(kind, v) {
+  v = v.trim();
+  if (kind === "x") {
+    if (/^@?[A-Za-z0-9_]{1,15}$/.test(v)) return "https://x.com/" + v.replace(/^@/, "");
+    try {
+      const u = new URL(/^https?:\/\//i.test(v) ? v : "https://" + v);
+      if (!['https:', 'http:'].includes(u.protocol) || u.username || u.password || u.port ||
+          !['x.com', 'www.x.com', 'twitter.com', 'www.twitter.com'].includes(u.hostname) ||
+          !/^\/[A-Za-z0-9_]{1,15}\/?$/.test(u.pathname)) return null;
+      return "https://x.com/" + u.pathname.split('/')[1];
+    } catch { return null; }
+  }
+  if (kind === "linkedin") return v.startsWith("http") ? v : "https://" + v.replace(/^\/+/, "");
+  if (kind === "whatsapp") return "https://wa.me/" + v.replace(/[^\d]/g, "");
+  if (kind === "email") return "mailto:" + v;
+  if (kind === "phone") return "tel:" + v.replace(/[^\d+]/g, "");
+  return null; // WeChat has no public link to a person: copy the ID, then open WeChat
+}
+function avatar(p) { const [bg, fg] = tint(p.id); return `<div class="av" style="background:${bg};color:${fg}">${KeeperCapture.isPhoto(p.photo) ? `<img src="${esc(p.photo)}" alt="">` : esc(initials(p.name))}</div>`; }
+const byId = id => db.people.find(p => p.id === id);
+
+// ---------- views ----------
+function render() {
+  document.querySelectorAll("nav.tabs button").forEach(b => b.classList.toggle("on", b.dataset.tab === tab));
+  document.getElementById("fab").style.display = ["today", "people"].includes(tab) ? "" : "none";
+  const v = document.getElementById("view");
+  if (tab === "today") v.innerHTML = viewToday();
+  if (tab === "people") v.innerHTML = viewPeople();
+  if (tab === "inbox") v.innerHTML = viewInbox();
+  if (tab === "settings") v.innerHTML = viewSettings();
+  if (tab === "find") { v.innerHTML = viewFind(); findRun(); }
+  if (tab === "me") { v.innerHTML = viewMe(); meInbox(); }
+  const s = v.querySelector(".search:not(.remote) input");
+  if (s) s.addEventListener("input", e => { query = e.target.value; const pos = e.target.selectionStart; render(); const n = document.querySelector(".search input"); n.focus(); n.setSelectionRange(pos, pos); });
+}
+function setTitle(t, s) { document.getElementById("title").textContent = t; document.getElementById("subtitle").textContent = s; }
+
+function viewToday() {
+  setTitle("Today", new Date().toLocaleDateString("en-GB", {weekday: "long", day: "numeric", month: "long"}));
+  if (!db.people.length) return `<div class="empty">${ICON.note.replace("<svg", '<svg width="52" height="52"')}<h2>Keep in touch with everyone you meet</h2><p class="note">Add a person once with all their channels. Each day this screen tells you who to reach out to next.</p><div class="actions" style="flex-direction:column"><button class="btn" data-act="add">Add a person</button><button class="btn soft" data-act="capturehelp">Show me how it works</button><button class="btn soft" data-act="demo">Try it with sample people</button></div></div>`;
+  const due = db.people.filter(p => daysOver(p) >= 0).sort((a, b) => rank(a) - rank(b) || daysOver(b) - daysOver(a));
+  const soon = db.people.filter(p => daysOver(p) < 0 && daysOver(p) >= -7).sort((a, b) => nextDue(a) - nextDue(b));
+  const fus = db.followups.filter(f => !f.done).sort((a, b) => a.due - b.due);
+  const ev = db.event ? `<div class="group" style="background:var(--ink);color:var(--bg)"><div class="item plain" style="color:inherit"><div class="grow"><div class="name" style="color:inherit">At ${esc(db.event.name)}</div><div class="meta" style="color:inherit;opacity:.7">${plural(db.people.filter(p => p.where === db.event.name).length, "person").replace(/(\d+) persons/, "$1 people")} met here · each gets a follow-up in 2 days</div></div><button class="btn soft" data-act="evend">End</button></div></div>` : `<button class="btn soft" data-act="evstart" style="width:100%;margin-bottom:12px">I'm at an event</button>`;
+  let h = ev + `<p class="summary"><b>${plural(due.length, "person")}</b> to reach out to${fus.length ? `, <b>${plural(fus.length, "follow-up")}</b>` : ""}.</p>`;
+  h = h.replace(/(\d+) persons/, "$1 people");
+  h += `<div class="sec"><h3>Reach out</h3><span>${due.length}</span></div>`;
+  h += due.length ? `<div class="group">${due.map(personRow).join("")}</div>` : `<div class="group"><div class="item plain note">You're up to date with everyone.</div></div>`;
+  if (fus.length) h += `<div class="sec"><h3>Follow-ups</h3><span>${fus.length}</span></div><div class="group">` + fus.map(f => { const p = byId(f.person); const late = f.due < today0(); return `<div class="item plain"><button class="check" data-fudone="${f.id}" aria-label="Done"></button><div class="grow"><div style="white-space:normal">${esc(f.text)}</div><div class="meta">${p ? esc(p.name) + " · " : ""}<span style="${late ? "color:var(--red)" : ""}">${late ? "was due " : "by "}${fmtDate(f.due)}</span></div></div></div>`; }).join("") + `</div>`;
+  if (soon.length) h += `<div class="sec"><h3>This week</h3><span>${soon.length}</span></div><div class="group">${soon.map(personRow).join("")}</div>`;
+  return h;
+}
+
+function personRow(p) {
+  const d = daysOver(p);
+  const when = d > 0 ? `<span class="when over">${d}d late</span>` : d === 0 ? `<span class="when over">Today</span>` : `<span class="when">in ${-d}d</span>`;
+  const l = lastOf(p);
+  const sub = l ? `${CHANNELS[l.kind]?.label || "In person"} · ${esc(l.text)}` : esc([p.role, p.company].filter(Boolean).join(", ") || p.where || "");
+  return `<button class="item" data-person="${p.id}">${avatar(p)}<div class="grow"><div class="name">${esc(p.name)}<span class="pri">${p.priority}</span></div><div class="meta">${sub}</div></div>${when}${ICON.chev}</button>`;
+}
+
+function viewPeople() {
+  setTitle("People", plural(db.people.length, "person").replace(/(\d+) persons/, "$1 people"));
+  const q = query.trim().toLowerCase();
+  const list = db.people.filter(p => !q || [p.name, p.company, p.role, p.where, p.tags, ...(p.nfcIds || []), ...p.channels.map(c => c.value)].join(" ").toLowerCase().includes(q))
+    .sort((a, b) => a.name.localeCompare(b.name));
+  let h = `<div class="search"><input type="search" placeholder="Name, channel or reader tag ID" value="${esc(query)}"></div>`;
+  if (!db.people.length) return h + `<div class="empty note">No one yet. Tap + to add someone you met.</div>`;
+  if (!list.length) return h + `<div class="empty note">No match.</div>`;
+  const groups = {};
+  list.forEach(p => { const k = (p.name[0] || "#").toUpperCase(); (groups[k] = groups[k] || []).push(p); });
+  return h + Object.entries(groups).map(([k, ps]) => `<div class="sec" style="margin-top:16px"><span style="font-weight:600">${esc(k)}</span></div><div class="group">${ps.map(p => `<button class="item" data-person="${p.id}">${avatar(p)}<div class="grow"><div class="name">${esc(p.name)}<span class="pri">${p.priority}</span></div><div class="meta">${esc([p.role, p.company].filter(Boolean).join(", ") || p.where || "")}</div></div>${ICON.chev}</button>`).join("")}</div>`).join("");
+}
+
+function viewSettings() {
+  setTitle("Settings", "Your contacts stay on this phone.");
+  return `<div class="group"><button class="item plain" data-act="capturehelp"><div class="grow">How to use Network Keeper</div>${ICON.chev}</button></div><div class="sec"><h3>Rhythm</h3></div><div class="group">${["A", "B", "C"].map(k => `<div class="item plain"><div class="grow">Priority ${k}</div><span class="when">every ${CADENCE[k]} days</span></div>`).join("")}</div>
+  <p class="note" style="margin:8px 4px">Set a different rhythm on any person when you edit them.</p>
+  <div class="sec"><h3>Everything in one place</h3></div><div class="group"><button class="item plain" data-act="bring"><div class="grow">Bring in messages, mail and calls</div>${ICON.chev}</button></div>
+  <div class="sec"><h3>Your data</h3></div><div class="group"><button class="item plain" data-act="export"><div class="grow">Export a backup</div>${ICON.chev}</button><label class="item plain" style="margin:0;text-transform:none;letter-spacing:0;font-size:17px;font-weight:400;color:var(--ink)"><div class="grow">Import a backup</div>${ICON.chev}<input type="file" accept="application/json" id="importFile" hidden></label><button class="item plain" data-act="demo"><div class="grow">Add sample people</div>${ICON.chev}</button><button class="item plain" data-act="wipe"><div class="grow" style="color:var(--red)">Delete everything</div></button></div>
+  <div class="sec"><h3>Install</h3></div><div class="group"><div class="item plain"><div class="grow note" style="white-space:normal"><b style="color:var(--ink)">iPhone:</b> in Safari tap Share, then Add to Home Screen.<br><b style="color:var(--ink)">Android:</b> in Chrome tap the menu, then Install app.<br>It opens full screen and works offline.</div></div></div>
+  <p class="note" style="text-align:center;margin-top:26px">Network Keeper v1 · an idea by Lola Tan</p>`;
+}
+
+// ---------- sheets ----------
+function openSheet(html) { stopCapture(); document.getElementById("sheet").scrollTop = 0; document.getElementById("sheetBody").innerHTML = html; document.getElementById("sheetBody").onclick = null; document.getElementById("bg").classList.add("on"); requestAnimationFrame(() => document.getElementById("sheet").classList.add("open")); }
+function closeSheet() { stopCapture(); document.getElementById("sheet").classList.remove("open"); document.getElementById("bg").classList.remove("on"); }
+
+function sheetPerson(p) {
+  const hist = [...p.touches].sort((a, b) => b.at - a.at);
+  const fus = db.followups.filter(f => f.person === p.id && !f.done);
+  const d = daysOver(p);
+  const facts = [
+    p.where || p.metAt ? ["Met", `${esc(p.where || "")}${p.metAt ? (p.where ? ", " : "") + fmtDate(p.metAt) : ""}`] : null,
+    ["Next reach out", `${d >= 0 ? `<span style="color:var(--red)">${d ? d + " days late" : "Today"}</span>` : fmtDate(nextDue(p))} · every ${cadence(p)} days`],
+    p.notes ? ["Notes", esc(p.notes)] : null,
+    p.tags ? ["Tags", esc(p.tags)] : null,
+    fus.length ? ["Follow-ups", fus.map(f => `${esc(f.text)} · by ${fmtDate(f.due)}`).join("\n")] : null,
+  ].filter(Boolean);
+  openSheet(`<div class="row" style="justify-content:flex-end;margin:-8px -6px -18px"><button class="btn link" id="closeS" style="font-weight:600">Done</button></div><div class="profile">${avatar(p)}<h2>${esc(p.name)}</h2><div class="meta">${esc([p.role, p.company].filter(Boolean).join(", "))}</div>
+    <div class="quick">${p.channels.map((c, i) => `<button class="qa" data-open="${p.id}:${i}"><i>${ICON[c.kind]}</i>${CHANNELS[c.kind].label}</button>`).join("")}</div></div>
+    <div class="quick" style="margin-top:4px"><button class="qa primary" data-write="${p.id}"><i>${ICON.edit}</i>Write</button><button class="qa" data-log="${p.id}"><i>${ICON.log}</i>Log touch</button><button class="qa" data-fu="${p.id}"><i>${ICON.bell}</i>Follow-up</button><button class="qa" data-edit="${p.id}"><i>${ICON.edit}</i>Edit</button><button class="qa" data-merge="${p.id}"><i>${ICON.merge}</i>Merge</button></div>
+    <div class="facts">${facts.map(([k, v]) => `<div class="fact"><small>${k}</small><div>${v}</div></div>`).join("")}</div>
+    ${(db.inbox || []).some(x => x.person === p.id) ? `<label>Messages</label><div class="hist">${db.inbox.filter(x => x.person === p.id).slice(0, 8).map(inboxRow).join("")}</div>` : ""}
+    <label>History</label><div class="hist">${hist.length ? hist.map(t => `<div class="h"><i></i><div>${esc(t.text)}<small>${CHANNELS[t.kind]?.label || "In person"} · ${fmtDate(t.at)}</small></div></div>`).join("") : `<div class="note">Nothing logged yet.</div>`}</div>`);
+}
+
+function sheetEdit(p) {
+  const isNew = !p;
+  p = p || {id: uid(), name: "", company: "", role: "", where: "", metAt: today0(), notes: "", tags: "", priority: "B", cadence: 0, channels: [{kind: "linkedin", value: ""}], touches: [], created: Date.now()};
+  if (isNew && db.event) { p.where = db.event.name; p.tags = "event"; }
+  const chRows = cs => cs.map((c, i) => `<div class="chrow"><select data-ck="${i}">${Object.entries(CHANNELS).map(([k, v]) => `<option value="${k}" ${k === c.kind ? "selected" : ""}>${v.label}</option>`).join("")}</select><input data-cv="${i}" value="${esc(c.value)}" placeholder="${CHANNELS[c.kind].ph}"></div>`).join("");
+  openSheet(`<div class="row editbar" style="justify-content:space-between;align-items:center"><button class="btn link" id="cancelP">Cancel</button><b>${isNew ? "New person" : "Edit"}</b><button class="btn link" id="saveP" style="font-weight:700">Save</button></div>
+    ${captureControls()}
+    <label for="f_name">Name</label><input id="f_name" value="${esc(p.name)}" placeholder="Full name" autocomplete="off">
+    <div class="row"><div style="flex:1"><label>Company</label><input id="f_company" value="${esc(p.company)}"></div><div style="flex:1"><label>Role</label><input id="f_role" value="${esc(p.role)}"></div></div>
+    <label>Channels</label><div id="chs">${chRows(p.channels)}</div><button class="btn link" id="addCh" style="padding:6px 2px">+ Add channel</button>
+    <label>Where you met</label><input id="f_where" value="${esc(p.where)}" placeholder="Event, city, who introduced you">
+    <label>When</label><input id="f_met" type="date" value="${dateInput(p.metAt || Date.now())}">
+    <label>Priority</label><div class="seg" id="f_pri">${["A", "B", "C"].map(k => `<button data-pri="${k}" class="${p.priority === k ? "on" : ""}">${k} · ${CADENCE[k]} days</button>`).join("")}</div>
+    <label>Custom rhythm, days</label><input id="f_cad" type="number" inputmode="numeric" value="${p.cadence || ""}" placeholder="Optional">
+    <label>Notes</label><textarea id="f_notes" placeholder="What you talked about, the opportunity">${esc(p.notes)}</textarea>
+    <label>Tags</label><input id="f_tags" value="${esc(p.tags)}" placeholder="investor, supplier, Shenzhen">
+    ${isNew ? "" : `<div class="actions"><button class="btn danger" id="delP">Delete person</button></div>`}`);
+  let chs = p.channels.map(c => ({...c})), pri = p.priority;
+  const sync = () => document.querySelectorAll("#chs .chrow").forEach((r, i) => { chs[i] = {kind: r.querySelector("select").value, value: r.querySelector("input").value}; });
+  document.getElementById("chs").addEventListener("change", e => { sync(); if (e.target.tagName === "SELECT") document.getElementById("chs").innerHTML = chRows(chs); });
+  document.getElementById("addCh").onclick = () => { sync(); chs.push({kind: "wechat", value: ""}); document.getElementById("chs").innerHTML = chRows(chs); };
+  document.getElementById("f_pri").onclick = e => { const b = e.target.closest("[data-pri]"); if (!b) return; pri = b.dataset.pri; document.querySelectorAll("#f_pri button").forEach(x => x.classList.toggle("on", x === b)); };
+  const captureDraft = mountCapture(p, incoming => {
+    sync(); chs = chs.filter(c => c.value.trim());
+    for (const c of incoming) if (CHANNELS[c.kind] && !chs.some(x => x.kind === c.kind && x.value.toLowerCase() === c.value.toLowerCase())) chs.push(c);
+    if (!chs.length) chs.push({kind:"linkedin",value:""});
+    document.getElementById("chs").innerHTML = chRows(chs);
+  });
+  document.getElementById("cancelP").onclick = closeSheet;
+  document.getElementById("saveP").onclick = () => {
+    sync();
+    const name = document.getElementById("f_name").value.trim();
+    if (!name) { toast("Add a name first"); return; }
+    if (chs.some(c => c.kind === "x" && c.value.trim() && !channelHref("x", c.value))) { toast("Check the X handle or profile link"); return; }
+    const duplicate = db.people.find(x => x.id !== p.id && (x.name.trim().toLowerCase() === name.toLowerCase() || x.channels.some(a => chs.some(b => a.kind === b.kind && a.value.trim().toLowerCase() === b.value.trim().toLowerCase() && b.value.trim()))));
+    if (duplicate && !confirm("Possible duplicate: " + duplicate.name + ". Save another card? You can merge them from the person card.")) return;
+    const before = JSON.stringify(db);
+    Object.assign(p, captureDraft(), {name, company: val("f_company"), role: val("f_role"), where: val("f_where"), notes: val("f_notes"), tags: val("f_tags"),
+      metAt: readDateInput(val("f_met")), priority: pri, cadence: parseInt(val("f_cad")) || 0, channels: chs.filter(c => c.value.trim())});
+    if (isNew) db.people.push(p);
+    if (isNew && db.event && p.where === db.event.name) db.followups.push({id: uid(), person: p.id, text: "Follow up from " + db.event.name, due: calendarDaysAfter(today0(), 2), done: false});
+    if (!save()) { db = JSON.parse(before); if (!isNew) p = byId(p.id); return; } closeSheet(); render(); toast(isNew ? name + " added" : "Saved");
+  };
+  const del = document.getElementById("delP");
+  if (del) del.onclick = () => { if (!confirm("Delete " + p.name + "?")) return; db.people = db.people.filter(x => x.id !== p.id); db.followups = db.followups.filter(f => f.person !== p.id); save(); closeSheet(); render(); };
+}
+const val = id => document.getElementById(id).value.trim();
+
+function sheetLog(p) {
+  const kinds = p.channels.map(c => c.kind).concat(["note"]).filter((k, i, a) => a.indexOf(k) === i);
+  openSheet(`<h2>Log a touch</h2><p class="note" style="margin:4px 0 0">with ${esc(p.name)}</p>
+    <label>How</label><div class="seg" id="l_kind">${kinds.map((k, i) => `<button data-k="${k}" class="${i === 0 ? "on" : ""}">${CHANNELS[k]?.label || "In person"}</button>`).join("")}</div>
+    <label>What happened</label><input id="l_text" placeholder="Sent the deck, she'll intro me to her CTO">
+    <div class="actions"><button class="btn" id="saveL">Save</button></div>`);
+  let kind = kinds[0];
+  document.getElementById("l_kind").onclick = e => { const b = e.target.closest("[data-k]"); if (!b) return; kind = b.dataset.k; document.querySelectorAll("#l_kind button").forEach(x => x.classList.toggle("on", x === b)); };
+  document.getElementById("saveL").onclick = () => { p.touches.push({at: Date.now(), kind, text: val("l_text") || "Reached out"}); save(); closeSheet(); render(); toast("Logged · next in " + cadence(p) + " days"); };
+}
+
+function sheetFollowup(p) {
+  const d = dateInput(calendarDaysAfter(today0(), 3));
+  openSheet(`<h2>Follow-up</h2><p class="note" style="margin:4px 0 0">with ${esc(p.name)}</p><label>What to do</label><input id="u_text" placeholder="Reply about the factory visit"><label>By</label><input id="u_due" type="date" value="${d}"><div class="actions"><button class="btn" id="saveU">Save</button></div>`);
+  document.getElementById("saveU").onclick = () => { const t = val("u_text"); if (!t) { toast("Write the follow-up"); return; } db.followups.push({id: uid(), person: p.id, text: t, due: readDateInput(val("u_due")), done: false}); save(); closeSheet(); render(); toast("Follow-up added"); };
+}
+
+function sheetMerge(p) {
+  const others = db.people.filter(x => x.id !== p.id).sort((a, b) => a.name.localeCompare(b.name));
+  openSheet(`<h2>Merge</h2><p class="note" style="margin:6px 0 14px">Pick the duplicate. Its channels, history and follow-ups move to ${esc(p.name)}, and the duplicate is removed.</p><div class="group" style="background:var(--field)">${others.map(o => `<button class="item" data-mergewith="${o.id}">${avatar(o)}<div class="grow"><div class="name">${esc(o.name)}</div><div class="meta">${o.channels.map(c => CHANNELS[c.kind].label).join(", ")}</div></div></button>`).join("")}</div>`);
+  document.getElementById("sheetBody").onclick = e => {
+    const c = e.target.closest("[data-mergewith]"); if (!c) return;
+    const o = byId(c.dataset.mergewith);
+    if (!confirm(`Merge ${o.name} into ${p.name}?`)) return;
+    for (const ch of o.channels) if (!p.channels.some(x => x.kind === ch.kind && x.value === ch.value)) p.channels.push(ch);
+    p.touches.push(...o.touches);
+    if (!p.photo && o.photo) p.photo = o.photo;
+    p.nfcIds = [...new Set([...(p.nfcIds || []), ...(o.nfcIds || [])])];
+    for (const k of ["company", "role", "where", "tags"]) if (!p[k] && o[k]) p[k] = o[k];
+    if (o.notes) p.notes = [p.notes, o.notes].filter(Boolean).join("\n");
+    if (rank(o) < rank(p)) p.priority = o.priority;
+    db.followups.forEach(f => { if (f.person === o.id) f.person = p.id; });
+    db.people = db.people.filter(x => x.id !== o.id);
+    save(); sheetPerson(p); render(); toast("Merged into one card");
+  };
+}
+
+// ---------- sample data ----------
+function demo() {
+  const t = today0(), ago = d => t - d * DAY + 10 * 3600000;
+  const P = (name, company, role, priority, where, met, channels, touches, notes, tags) => ({id: uid(), name, company, role, priority, where, metAt: ago(met), channels, touches: touches.map(([d, kind, text]) => ({at: ago(d), kind, text})), notes, tags, cadence: 0, created: Date.now()});
+  const ppl = [
+    P("Mei Chen", "Brightline Ventures", "Partner", "A", "HAX demo day, Shenzhen", 40, [{kind: "linkedin", value: "linkedin.com/in/meichen-demo"}, {kind: "wechat", value: "meichen_bv"}], [[20, "wechat", "Sent the one-pager"]], "Invests in consumer hardware, pre-seed. Wants a demo video.", "investor"),
+    P("Daniel Okafor", "Northwind Robotics", "CTO", "A", "Hardware meetup, Huaqiangbei", 9, [{kind: "whatsapp", value: "+44 7700 900123"}, {kind: "email", value: "daniel@example.com"}], [[9, "note", "Talked about grippers over coffee"]], "Looking for a factory partner for 500 units.", "client, robotics"),
+    P("Sofia Lind", "Nordic Design Studio", "Founder", "B", "Intro from a friend", 70, [{kind: "linkedin", value: "linkedin.com/in/sofialind-demo"}, {kind: "email", value: "sofia@example.com"}], [[45, "email", "Shared the app concept"]], "Could help with brand and launch on X.", "design"),
+    P("Wang Lei", "Huaxin Plastics", "Sales manager", "B", "Canton Fair", 120, [{kind: "wechat", value: "wanglei_hx"}, {kind: "phone", value: "+86 138 0000 1234"}], [[33, "wechat", "Asked for an injection mold quote"]], "Molds from 8k RMB, 3 weeks lead time.", "supplier, Shenzhen"),
+    P("Aisha Rahman", "Startup Grind SG", "Community lead", "C", "Startup Grind Singapore", 200, [{kind: "linkedin", value: "linkedin.com/in/aisharahman-demo"}], [[100, "linkedin", "Congratulated her on the new role"]], "Runs monthly founder events.", "community"),
+    P("Tom Becker", "Kreativ GmbH", "Product lead", "C", "LinkedIn post", 15, [{kind: "linkedin", value: "linkedin.com/in/tombecker-demo"}], [], "", "product"),
+    P("Mei C.", "", "", "B", "WeChat group: Shenzhen founders", 12, [{kind: "wechat", value: "mei_c_private"}, {kind: "whatsapp", value: "+852 5123 4567"}], [[12, "wechat", "Said hi in the group"]], "Probably the same Mei from HAX.", ""),
+  ];
+  db.people.push(...ppl);
+  db.followups.push({id: uid(), person: ppl[1].id, text: "Send factory visit dates for next week", due: t, done: false});
+  db.followups.push({id: uid(), person: ppl[0].id, text: "Share the intro video", due: t + 2 * DAY, done: false});
+  save(); render(); toast("7 sample people added");
+}
+
+// ---------- events ----------
+function toast(m) { const t = document.getElementById("toast"); t.textContent = m; t.classList.add("on"); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove("on"), 1600); }
+
+document.querySelector("nav.tabs").onclick = e => { const b = e.target.closest("[data-tab]"); if (!b) return; tab = b.dataset.tab; render(); window.scrollTo(0, 0); };
+document.getElementById("fab").onclick = () => sheetEdit(null);
+document.getElementById("bg").onclick = closeSheet;
+document.getElementById("sheet").addEventListener("click", e => { if (e.target.id === "closeS") closeSheet(); });
+document.addEventListener("click", e => {
+  const o = e.target.closest("[data-open]");
+  if (o) {
+    const [pid, i] = o.dataset.open.split(":"); const c = byId(pid).channels[+i]; const href = channelHref(c.kind, c.value);
+    if (href) { window.open(href, "_blank"); return; }
+    if (c.kind !== "wechat") { toast("Check this profile link in Edit"); return; }
+    (navigator.clipboard ? navigator.clipboard.writeText(c.value) : Promise.reject()).then(() => toast("WeChat ID copied"), () => toast("WeChat ID: " + c.value));
+    setTimeout(() => { location.href = "weixin://"; }, 700);
+    return;
+  }
+  const a = e.target.closest("[data-act]");
+  if (a) { const k = a.dataset.act; if (k === "add") sheetEdit(null); if (k === "demo") demo(); if (k === "export") exportData(); if (k === "evstart") { const n = prompt("Which event?", "Maker Faire Shenzhen"); if (n) { db.event = {name: n.trim(), at: Date.now()}; save(); render(); toast("Everyone you add now is tagged " + n.trim()); } } if (k === "evend") { const n = db.event.name; db.event = null; save(); render(); toast("Ended " + n); } if (k === "mycard") sheetMyCard(); if (k === "bring") sheetBring(); if (k === "wipe" && confirm("Delete every person and follow-up on this phone?")) { db = {people: [], followups: []}; save(); render(); } return; }
+  const w = e.target.closest("[data-write]"); if (w) { sheetWrite(byId(w.dataset.write)); return; }
+  const t = e.target.closest("[data-log],[data-fu],[data-edit],[data-merge]");
+  if (t) { const p = byId(t.dataset.log || t.dataset.fu || t.dataset.edit || t.dataset.merge); if (t.dataset.log) sheetLog(p); else if (t.dataset.fu) sheetFollowup(p); else if (t.dataset.edit) sheetEdit(p); else sheetMerge(p); return; }
+  const f = e.target.closest("[data-fudone]");
+  if (f) { f.classList.add("done"); const x = db.followups.find(y => y.id === f.dataset.fudone); x.done = true; save(); setTimeout(render, 300); toast("Done"); return; }
+  const c = e.target.closest("#view [data-person]");
+  if (c) sheetPerson(byId(c.dataset.person));
+});
+document.addEventListener("change", e => {
+  if (e.target.id !== "importFile" || !e.target.files[0]) return;
+  e.target.files[0].text().then(t => { const d = JSON.parse(t); if (!d.people) throw 0; db = d; save(); render(); toast("Imported " + plural(d.people.length, "person").replace(/(\d+) persons/, "$1 people")); }).catch(() => toast("That file isn't a Network Keeper backup"));
+});
+// ---------- Write: a short message ready to send on the channel you pick, logged as a touch ----------
+function drafts(p) {
+  const first = (p.name || "").split(" ")[0];
+  const l = lastOf(p);
+  const out = [`Hi ${first}, it's been a while. How are things${p.company ? " at " + p.company : ""}? Would love to catch up for a coffee soon.`];
+  if (l && l.text) out.unshift(`Hi ${first}, following up on our last chat (${l.text.slice(0, 60)}). Any news on your side?`);
+  if (p.where) out.push(`Hi ${first}, great meeting you at ${p.where}! Let's stay in touch. Here is my contact, feel free to reach out anytime.`);
+  out.push(`Hi ${first}, I came across something that made me think of you. Do you have 10 minutes this week?`);
+  return out;
+}
+function sheetWrite(p) {
+  const ds = drafts(p);
+  const chans = p.channels.filter(c => c.value);
+  openSheet(`<h2>Write to ${esc(p.name.split(" ")[0])}</h2><p class="note" style="margin:4px 0 0">Pick a start, change anything, then send it where you two talk.</p>
+    <label>Start from</label><div class="chips">${ds.map((d, i) => `<button class="chip" data-draft="${i}" style="border:0">${["Follow up", "Catch up", "Nice to meet you", "Thought of you"][i] && esc(d.slice(0, 26)) + "…"}</button>`).join("")}</div>
+    <label>Message</label><textarea id="w_text" rows="5">${esc(ds[0])}</textarea>
+    <label>Send on</label><div class="quick">${chans.length ? chans.map((c, i) => `<button class="qa" data-send="${i}"><i>${ICON[c.kind]}</i>${CHANNELS[c.kind].label}</button>`).join("") : `<div class="note">Add a channel to ${esc(p.name)} first.</div>`}<button class="qa" data-send="copy"><i>${ICON.note}</i>Copy</button></div>`);
+  const body = document.getElementById("sheetBody");
+  body.onclick = e => {
+    const d = e.target.closest("[data-draft]"); if (d) { document.getElementById("w_text").value = ds[+d.dataset.draft]; return; }
+    const b = e.target.closest("[data-send]"); if (!b) return;
+    const text = document.getElementById("w_text").value.trim(); if (!text) return;
+    const copy = () => navigator.clipboard ? navigator.clipboard.writeText(text).catch(() => {}) : Promise.resolve();
+    let kind = "note";
+    if (b.dataset.send !== "copy") {
+      const c = chans[+b.dataset.send]; kind = c.kind; const enc = encodeURIComponent(text);
+      if (c.kind === "whatsapp") window.open("https://wa.me/" + c.value.replace(/[^\d]/g, "") + "?text=" + enc, "_blank");
+      else if (c.kind === "email") location.href = "mailto:" + c.value + "?subject=" + encodeURIComponent("Catching up") + "&body=" + enc;
+      else if (c.kind === "phone") location.href = "sms:" + c.value.replace(/[^\d+]/g, "") + "&body=" + enc;
+      else { copy(); toast("Copied, paste it in " + CHANNELS[c.kind].label); setTimeout(() => { if (c.kind === "wechat") location.href = "weixin://"; else window.open(channelHref(c.kind, c.value), "_blank"); }, 600); }
+    } else { copy(); toast("Copied"); }
+    p.touches.push({at: Date.now(), kind, text: text.slice(0, 140)}); save(); setTimeout(() => { closeSheet(); render(); }, 300);
+  };
+}
+// ---------- My card: a QR anyone can scan with their phone camera to save you as a contact ----------
+let qrP;
+function loadQr() { return qrP = qrP || new Promise((ok, no) => { const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"; s.onload = () => ok(window.QRCode); s.onerror = () => { qrP = null; no(new Error("no QR")); }; document.head.appendChild(s); }); }
+function vcardOf(d) {
+  const e = s => String(s || "").replace(/([,;\\])/g, "\\$1");
+  const parts = (d.name || "").trim().split(/\s+/);
+  return ["BEGIN:VCARD", "VERSION:3.0", `N:${e(parts.slice(1).join(" "))};${e(parts[0])};;;`, `FN:${e(d.name)}`, d.headline ? `TITLE:${e(d.headline)}` : "", d.email ? `EMAIL:${d.email}` : "", d.phone ? `TEL:${d.phone}` : "",
+    d.linkedin ? `URL:${d.linkedin.startsWith("http") ? d.linkedin : "https://" + d.linkedin}` : "", "END:VCARD"].filter(Boolean).join("\n");
+}
+async function sheetMyCard() {
+  const d = me().draft;
+  openSheet(`<div class="row" style="justify-content:flex-end;margin:-8px -6px -18px"><button class="btn link" id="closeS" style="font-weight:600">Done</button></div><div class="profile"><h2>${esc(d.name || "Your card")}</h2><div class="meta">${esc(d.headline || "")}</div></div>
+    <div id="qr" style="display:flex;justify-content:center;padding:18px;background:#fff;border-radius:18px;margin:10px auto;width:max-content"></div>
+    <p class="note" style="text-align:center">Someone points their phone camera at this and saves you as a contact, with ${[d.email && "email", d.phone && "phone", d.linkedin && "LinkedIn"].filter(Boolean).join(", ") || "your name"}.</p>`);
+  try { const Q = await loadQr(); new Q(document.getElementById("qr"), {text: vcardOf(d), width: 232, height: 232, correctLevel: Q.CorrectLevel.M}); }
+  catch (e) { document.getElementById("qr").outerHTML = `<p class="note">The QR maker needs the internet once. Try again when online.</p>`; }
+}
+// ---------- All: every message, mail, call and post in one timeline (app/aggregate.js, docs/AGGREGATOR.md) ----------
+const SRC = {whatsapp: ["WhatsApp", "#25a244"], linkedin: ["LinkedIn", "#0a66c2"], instagram: ["Instagram", "#c13584"], "instagram-post": ["Instagram post", "#c13584"], email: ["Email", "#b4581a"], calls: ["Call", "#5b3fb5"], wechat: ["WeChat", "#1aad19"]};
+let inboxSrc = "";
+function inboxRow(x) {
+  const [label, color] = SRC[x.src] || [x.src, "#666"];
+  const p = x.person && byId(x.person);
+  return `<div class="h"><i style="background:${color}"></i><div>${x.who === "me" ? "<b>You:</b> " : ""}${esc(x.text)}<small>${label}${p ? " · " + esc(p.name) : ""} · ${fmtDate(x.at)}</small></div></div>`;
+}
+function viewInbox() {
+  const all = db.inbox || [];
+  setTitle("All", all.length ? `${plural(all.length, "message")} from ${new Set(all.map(x => x.src)).size} places` : "Messages, mail, calls and posts in one place");
+  if (!all.length) return `<div class="empty">${ICON.email.replace("<svg", '<svg width="52" height="52"')}<h2>Everything in one place</h2><p class="note">Bring in your WhatsApp chats, LinkedIn messages, Instagram, email and calls. Each conversation lands on the right person, and this screen shows it all in one timeline. Nothing leaves your phone.</p><div class="actions" style="flex-direction:column"><button class="btn" data-act="bring">Bring in my messages</button><button class="btn soft" data-act="bringdemo">Try it with sample messages</button></div></div>`;
+  const srcs = [...new Set(all.map(x => x.src))];
+  const list = all.filter(x => !inboxSrc || x.src === inboxSrc).filter(x => !query || (x.text + " " + (byId(x.person) || {}).name).toLowerCase().includes(query.toLowerCase()));
+  return `<div class="search"><input type="search" placeholder="Search everything" value="${esc(query)}"></div>
+    <div class="chips" style="margin:0 0 10px">${["", ...srcs].map(k => `<button class="chip" data-src="${k}" style="border:0;${inboxSrc === k ? "background:var(--ink);color:var(--bg)" : ""}">${k ? SRC[k]?.[0] || k : "All"}</button>`).join("")}<button class="chip" data-act="bring" style="border:0">+ Add</button></div>
+    <div class="group" style="padding:6px 14px"><div class="hist">${list.slice(0, 300).map(inboxRow).join("") || `<div class="note">No match.</div>`}</div></div>`;
+}
+function sheetBring() {
+  openSheet(`<div class="row" style="justify-content:flex-end;margin:-8px -6px -18px"><button class="btn link" id="closeS" style="font-weight:600">Done</button></div><h2>Bring everything in</h2>
+    <p class="note">Download your own data from each app, then pick the files here. They are read on this phone; nothing is uploaded.</p>
+    <div class="facts">
+      <div class="fact"><small>WhatsApp</small><div>Open a chat › contact name › Export chat › Without media.</div></div>
+      <div class="fact"><small>LinkedIn</small><div>Settings › Data privacy › Get a copy of your data › Messages. Pick messages.csv.</div></div>
+      <div class="fact"><small>Instagram</small><div>Your activity › Download your information › JSON. Pick message_1.json files and posts_1.json.</div></div>
+      <div class="fact"><small>Email</small><div>Google Takeout › Mail gives one .mbox file. Apple Mail and Outlook can export .mbox too.</div></div>
+      <div class="fact"><small>Calls</small><div>Android: SMS Backup &amp; Restore saves calls-….xml. iPhone has no call export yet.</div></div>
+      <div class="fact"><small>Phone contacts</small><div>iPhone Contacts › select all › Export, or Google Contacts › Export › vCard. Pick the .vcf file.</div></div>
+      <div class="fact"><small>WeChat</small><div>WeChat has no export. Log a touch by hand on the person for now.</div></div>
+    </div>
+    <label class="btn" style="display:block;text-align:center;margin-top:14px">Pick files<input type="file" id="bringFile" multiple hidden accept=".txt,.csv,.json,.mbox,.xml,.vcf,text/*,application/json"></label>
+    <div id="bringOut" class="note" style="margin-top:10px"></div>`);
+}
+async function bringFiles(files) {
+  const out = document.getElementById("bringOut"); const lines = []; let me = (db.me && db.me.draft && db.me.draft.name) || "";
+  for (const f of files) {
+    const text = await f.text();
+    let r = NKAggregate.read(f.name, text, {me, email: db.me && db.me.draft && db.me.draft.email});
+    if (r && r.needsMe && r.authors && r.authors.length) {
+      const pick = prompt(`Which name is you in ${f.name}?\n${r.authors.join(", ")}`, r.authors.find(a => a === me) || r.authors[r.authors.length - 1]);
+      if (!pick) continue; me = pick;
+      if (r.source === "instagram") r = NKAggregate.read(f.name, text, {me});
+      else r = {...r, contacts: r.authors.filter(a => a !== pick).slice(0, 1).map(name => ({name, messages: r.messages.map(m => ({...m, from: m.from === pick ? "me" : m.from}))}))};
+    }
+    if (!r) { lines.push(`${esc(f.name)}: not a file I can read yet`); continue; }
+    const o = NKAggregate.merge(db, r, uid);
+    lines.push(`${esc(f.name)}: ${plural(o.messages, "message")}, ${plural(o.people, "person").replace(/(\d+) persons/, "$1 people")}${o.added ? ` (${o.added} new)` : ""}`);
+  }
+  save(); if (out) out.innerHTML = lines.join("<br>"); render();
+}
+function bringDemo() {
+  const now = Date.now(), H = 3600000, d = n => now - n * 24 * H;
+  if (!db.people.length) demo();
+  const P = db.people;
+  const S = [[P[0], "linkedin", 0.1, "Ann", "Loved your talk on hardware startups, coffee next week?"], [P[0], "linkedin", 0.12, "me", "Yes! Thursday at 10 near Futian?"],
+    [P[1], "whatsapp", 0.4, P[1] && P[1].name, "Sent the factory list, see page 3"], [P[1], "calls", 1, "me", "Outgoing call, 12 min"],
+    [P[2], "email", 2, P[2] && P[2].name, "Re: pilot order for 500 units"], [null, "instagram-post", 3, "me", "Night market in Huaqiangbei"],
+    [P[3], "instagram", 3.5, P[3] && P[3].name, "Saw your post, are you at the maker fair?"], [P[4] || P[0], "email", 5, "me", "Intro: Lola meets the Shenzhen hardware group"]];
+  db.inbox = db.inbox || [];
+  S.forEach(([p, src, ago, who, text]) => { db.inbox.push({at: d(ago), src, person: p ? p.id : "", who: who === "me" ? "me" : (p ? p.name : who), text, sample: true}); });
+  db.inbox.sort((a, b) => b.at - a.at); save(); render(); toast("Sample messages added");
+}
+document.addEventListener("click", e => {
+  const c = e.target.closest("[data-src]"); if (c) { inboxSrc = c.dataset.src; render(); return; }
+  const b = e.target.closest('[data-act="bringdemo"]'); if (b) bringDemo();
+});
+document.addEventListener("change", e => { if (e.target.id === "bringFile" && e.target.files.length) bringFiles([...e.target.files]); });
+function exportData() {
+  const blob = new Blob([JSON.stringify(db, null, 2)], {type: "application/json"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "network-keeper-" + new Date().toISOString().slice(0, 10) + ".json"; a.click();
+}
+// ---------- Me and Find: opt-in profiles, jobs and first messages on ce-net (edge/worker.mjs, ce-net.com/api/people) ----------
+// Leif 2026-10-01 ~21:00: "I want to build profiles on myself and on individuals online when they opt in we can search for jobs
+// and also hire and find people for them" / "it should be easy to inport just using youer linked in profile".
+// Leif 2026-10-02 17:12:54: "you should be able to create an account in the networking app using nothing but your name or your
+// linkedin profile - and we tell you if we cant find you or if its ambiguous who you are ... other wise we find everything we
+// need online". The Find-you sheet does that on /api/people/resolve (read-only; a match only prefills the draft on this phone).
+// The profile is a draft on this phone until the person ticks "List me" and saves; the edit key stays here (and in the backup).
+const API = /(^|\.)ce-net\.com$/.test(location.hostname) ? "/api/people" : "https://ce-net.com/api/people";
+const OPEN_TO = {work: "Looking for work", hiring: "Hiring", projects: "Open to projects", advice: "Happy to give advice"};
+let findMode = "people", findQ = "", findT = 0, findOpen = "", findRequest = 0;
+const me = () => (db.me = db.me || {draft: {name: "", headline: "", location: "", about: "", skills: [], experience: [], education: [], linkedin: "", email: "", open_to: []}, id: "", key: "", jobs: []});
+async function api(method, path, body, key) {
+  const r = await fetch(API + path, {method, headers: Object.assign({"content-type": "application/json"}, key ? {authorization: "Bearer " + key} : {}), body: body ? JSON.stringify(body) : undefined});
+  const j = await r.json().catch(() => ({error: "no answer"})); if (!r.ok) throw new Error(j.error || ("error " + r.status)); return j;
+}
+function viewMe() {
+  const m = me(), d = m.draft;
+  setTitle("Me", m.id ? "Listed on ce-net" : "Your profile, for work and hiring");
+  if (!m.id && !d.name) return `<div class="empty">${ICON.note.replace("<svg", '<svg width="52" height="52"')}<h2>Let people find you</h2><p class="note">Make a profile so people can find you for work, or find people to hire. Give just your name or your LinkedIn link and we find the rest. Nothing goes online until you choose to list it.</p><div class="actions" style="flex-direction:column"><button class="btn" data-act="resolve">Find me with my name or LinkedIn</button><button class="btn soft" data-act="mehand">Fill it in myself</button></div></div>`;
+  let h = `<div class="group"><div class="item plain" style="align-items:flex-start">${avatar({id: m.id || "me", name: d.name || "?"})}<div class="grow"><div class="name" style="white-space:normal">${esc(d.name)}${m.id ? '<span class="badge live">Listed</span>' : '<span class="badge">Draft</span>'}</div><div class="meta" style="white-space:normal">${esc(d.headline)}</div><div class="meta">${esc(d.location)}</div>${d.open_to.length ? `<div class="chips">${d.open_to.map(o => `<span class="chip">${esc(OPEN_TO[o] || o)}</span>`).join("")}</div>` : ""}</div></div></div>`;
+  if (d.about) h += `<div class="sec"><h3>About</h3></div><div class="group"><div class="item plain note" style="white-space:pre-wrap;color:var(--ink)">${esc(d.about)}</div></div>`;
+  if (d.skills.length) h += `<div class="sec"><h3>Skills</h3></div><div class="chips" style="margin:6px 4px">${d.skills.map(x => `<span class="chip">${esc(x)}</span>`).join("")}</div>`;
+  if (d.experience.length) h += `<div class="sec"><h3>Experience</h3></div><div class="group">${d.experience.map(e => `<div class="item plain"><div class="grow"><div class="name" style="white-space:normal;font-size:16px">${esc(e.title)}</div><div class="meta" style="white-space:normal">${esc([e.org, e.when].filter(Boolean).join(" · "))}</div></div></div>`).join("")}</div>`;
+  if (d.education.length) h += `<div class="sec"><h3>Education</h3></div><div class="group">${d.education.map(e => `<div class="item plain"><div class="grow"><div class="name" style="white-space:normal;font-size:16px">${esc(e.org)}</div><div class="meta" style="white-space:normal">${esc([e.title, e.when].filter(Boolean).join(" · "))}</div></div></div>`).join("")}</div>`;
+  h += `<div class="actions"><button class="btn" data-act="meedit">Edit</button><button class="btn soft" data-act="li">Import from LinkedIn</button><button class="btn soft" data-act="mycard">My card QR</button></div>`;
+  if (m.id) h += `<div class="sec"><h3>Messages</h3></div><div id="inbox" class="group"><div class="item plain note">Loading…</div></div>`;
+  if (m.jobs.length) h += `<div class="sec"><h3>Your job posts</h3></div><div class="group">${m.jobs.map(j => `<div class="item plain"><div class="grow"><div class="name">${esc(j.title)}</div><div class="meta" id="jin_${esc(j.id)}">…</div></div><button class="btn danger" data-jobclose="${esc(j.id)}">Close</button></div>`).join("")}</div>`;
+  if (m.id) h += `<div class="group" style="margin-top:22px"><button class="item plain" data-act="mehide"><div class="grow">Stop listing me</div></button><button class="item plain" data-act="medel"><div class="grow" style="color:var(--red)">Delete my profile from ce-net</div></button></div>`;
+  return h;
+}
+async function meInbox() {
+  const m = me(); if (!m.id) return;
+  const box = document.getElementById("inbox");
+  try { const r = await api("GET", "/inbox?id=" + m.id, null, m.key);
+    if (box) box.innerHTML = r.messages.length ? r.messages.map(x => `<div class="item plain" style="align-items:flex-start"><div class="grow"><div class="name" style="font-size:16px">${esc(x.from_name)}</div><div style="white-space:pre-wrap;margin:2px 0">${esc(x.text)}</div><div class="meta"><a href="mailto:${esc(x.from_email)}" style="color:var(--blue)">${esc(x.from_email)}</a> · ${fmtDate(x.ts * 1000)}</div></div></div>`).join("") : `<div class="item plain note">No messages yet. People who find you write here.</div>`;
+  } catch (e) { if (box) box.innerHTML = `<div class="item plain note">Messages didn't load: ${esc(e.message)}</div>`; }
+  for (const j of m.jobs) { const el = document.getElementById("jin_" + j.id); if (!el) continue;
+    api("GET", "/inbox?kind=job&id=" + j.id, null, j.key).then(r => { el.innerHTML = r.messages.length ? r.messages.map(x => `${esc(x.from_name)} <a href="mailto:${esc(x.from_email)}" style="color:var(--blue)">${esc(x.from_email)}</a>: ${esc(x.text)}`).join("<br>") : "No replies yet"; }).catch(e => { el.textContent = e.message; }); }
+}
+function sheetImport() {
+  openSheet(`<h2>Import from LinkedIn</h2>
+  <p class="note">On a computer, open your LinkedIn profile, tap <b>More</b> (or <b>Resources</b>), then <b>Save to PDF</b>. Choose that PDF here. You check everything before it goes online.</p>
+  <label class="btn wide" style="display:block;text-align:center;text-transform:none;letter-spacing:0;font-size:16px;color:var(--bg);margin-top:14px">Choose the LinkedIn PDF<input type="file" accept="application/pdf,.pdf" id="liPdf" hidden></label>
+  <label>Or paste your profile text</label><textarea id="liText" placeholder="On your phone: open your profile, select all the text, copy, paste here"></textarea>
+  <label>Your LinkedIn link</label><input id="liUrl" placeholder="linkedin.com/in/your-name" value="${esc(me().draft.linkedin)}">
+  <div class="actions"><button class="btn soft" id="closeS">Cancel</button><button class="btn" id="liGo">Use this</button></div><p class="note" id="liMsg"></p>`);
+  const use = (p, how) => { const d = me().draft;
+    for (const k of ["name", "headline", "location", "about", "linkedin", "email"]) if (p[k]) d[k] = p[k];
+    for (const k of ["skills", "experience", "education"]) if (p[k] && p[k].length) d[k] = p[k];
+    const u = document.getElementById("liUrl").value.trim(); if (u && !p.linkedin) d.linkedin = /^https?:/.test(u) ? u : "https://" + u;
+    save(); closeSheet(); tab = "me"; render(); toast(how); setTimeout(() => sheetMeEdit(), 400); };
+  document.getElementById("liPdf").onchange = async e => { const f = e.target.files[0]; if (!f) return; const msg = document.getElementById("liMsg"); msg.textContent = "Reading the PDF…";
+    try { const pdfjs = await loadPdfJs(); const {lines, sidebarX} = await LinkedInImport.pdfLines(pdfjs, new Uint8Array(await f.arrayBuffer()));
+      const p = LinkedInImport.parse(lines, sidebarX); if (!p.name) throw new Error("no name found");
+      use(p, "Imported " + plural(p.experience.length, "role") + " and " + plural(p.skills.length, "skill"));
+    } catch (err) { msg.textContent = "That PDF didn't read as a LinkedIn profile (" + err.message + "). Paste the text instead."; } };
+  document.getElementById("liGo").onclick = () => { const t = document.getElementById("liText").value;
+    if (!t.trim()) { const u = document.getElementById("liUrl").value.trim(); if (u) { use({}, "LinkedIn link saved"); return; } toast("Choose the PDF or paste the text"); return; }
+    const p = LinkedInImport.parse(t.split(/\n+/)); use(p, "Imported from your text"); };
+}
+let pdfjsP = null;
+function loadPdfJs() {
+  return pdfjsP = pdfjsP || new Promise((ok, no) => { const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+    s.onload = () => { window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"; ok(window.pdfjsLib); };
+    s.onerror = () => { pdfjsP = null; no(new Error("the PDF reader didn't load")); }; document.head.appendChild(s); });
+}
+function adopt(p) { const d = me().draft;
+  for (const k of ["name", "headline", "location", "about", "linkedin", "email"]) if (p[k]) d[k] = p[k];
+  for (const k of ["skills", "experience", "education", "open_to"]) if (Array.isArray(p[k]) && p[k].length) d[k] = p[k];
+  save(); }
+function resolveHit(p, web) {
+  openSheet(`<div class="profile">${avatar({id: p.id || "found", name: p.name})}<h2>${esc(p.name)}</h2><div class="meta">${esc(p.headline || "")}</div><div class="meta">${esc(p.location || p.linkedin || "")}</div></div>
+  <p class="note">${esc(web ? "We read this from your public LinkedIn page just now. Check it and fill in the rest — nothing goes online until you choose to list it." : "Is this you? Your details come in so you can check everything before anything goes online.")}</p>
+  <div class="actions"><button class="btn soft" id="r_no">Not me</button><button class="btn" id="r_yes">Yes, it's me</button></div>`);
+  document.getElementById("r_yes").onclick = () => { adopt(p); closeSheet(); tab = "me"; render(); toast("Found you"); setTimeout(sheetMeEdit, 350); };
+  document.getElementById("r_no").onclick = () => sheetResolve("That wasn't you. Give your LinkedIn link, or paste your profile instead."); }
+function sheetAmbiguous(r) {
+  openSheet(`<h2>Which one is you?</h2><p class="note">${esc(r.need || "We can't tell who you are.")}</p>
+  <div class="group">${(r.people || []).map((x, i) => `<button class="item" data-rpick="${i}">${avatar({id: x.id, name: x.name})}<div class="grow"><div class="name">${esc(x.name)}</div><div class="meta">${esc(x.headline || "")}</div><div class="meta">${esc(x.location || "")}</div></div>${ICON.chev}</button>`).join("")}</div>
+  <div class="actions"><button class="btn soft" id="r_none">None of these are me</button></div>`);
+  document.querySelectorAll("[data-rpick]").forEach(b => b.onclick = () => resolveHit(r.people[+b.dataset.rpick], false));
+  document.getElementById("r_none").onclick = () => sheetImport(); }
+async function sheetResolve(msgIn) {
+  openSheet(`<h2>Find you</h2>
+  <p class="note">Give just your name or your LinkedIn link. We find you and your details online — and if we can't tell who you are, we say so and ask for more.</p>
+  <label>Your name</label><input id="r_name" placeholder="e.g. Lola Tan" value="${esc(me().draft.name)}">
+  <label>Or your LinkedIn link</label><input id="r_li" placeholder="linkedin.com/in/your-name" value="${esc(me().draft.linkedin)}">
+  <div class="actions"><button class="btn soft" id="closeS">Cancel</button><button class="btn" id="r_go">Find me</button></div>
+  <div id="r_alt"></div><p class="note" id="r_msg">${esc(msgIn || "")}</p>`);
+  document.getElementById("r_go").onclick = async () => { const v = id => document.getElementById(id).value.trim();
+    const msg = document.getElementById("r_msg"), alt = document.getElementById("r_alt");
+    msg.textContent = "Looking for you…"; alt.innerHTML = "";
+    try { const r = await api("POST", "/resolve", {name: v("r_name"), linkedin: v("r_li")});
+      if (r.status === "found") return resolveHit(r.person, r.source === "web");
+      if (r.status === "ambiguous") return sheetAmbiguous(r);
+      msg.textContent = r.need || "We couldn't find you.";
+      alt.innerHTML = `<div class="actions" style="flex-direction:column"><button class="btn soft" id="r_pdf">Paste the LinkedIn PDF or text</button><button class="btn soft" id="r_hand">Fill it in myself</button></div>`;
+      document.getElementById("r_pdf").onclick = () => sheetImport();
+      document.getElementById("r_hand").onclick = () => sheetMeEdit();
+    } catch (e) { msg.textContent = e.message; } };
+}
+function sheetMeEdit() {
+  const m = me(), d = m.draft;
+  const role = (e, i, kind) => `<div class="role" data-${kind}="${i}"><input placeholder="${kind === "edu" ? "Degree, field" : "Title"}" value="${esc(e.title)}" data-k="title"><input placeholder="${kind === "edu" ? "School" : "Company"}" value="${esc(e.org)}" data-k="org"><input placeholder="When, e.g. 2022 - Present" value="${esc(e.when)}" data-k="when"></div>`;
+  openSheet(`<h2>Your profile</h2>
+  <label>Name</label><input id="m_name" value="${esc(d.name)}">
+  <label>What you do</label><input id="m_head" value="${esc(d.headline)}" placeholder="e.g. PCB designer, consumer electronics">
+  <label>Where</label><input id="m_loc" value="${esc(d.location)}" placeholder="City, country">
+  <label>About</label><textarea id="m_about">${esc(d.about)}</textarea>
+  <label>Skills, separated by commas</label><input id="m_skills" value="${esc(d.skills.join(", "))}">
+  <label>Experience</label><div id="m_exp">${d.experience.map((e, i) => role(e, i, "exp")).join("")}</div><button class="btn link" id="m_addexp">+ Add a role</button>
+  <label>Education</label><div id="m_edu">${d.education.map((e, i) => role(e, i, "edu")).join("")}</div><button class="btn link" id="m_addedu">+ Add a school</button>
+  <label>LinkedIn</label><input id="m_li" value="${esc(d.linkedin)}" placeholder="linkedin.com/in/your-name">
+  <label>Email for messages (never shown)</label><input id="m_email" type="email" value="${esc(d.email)}">
+  <label>I am</label><div class="group" style="margin:0">${Object.entries(OPEN_TO).map(([k, t]) => `<label class="tick"><input type="checkbox" data-opento="${k}" ${d.open_to.includes(k) ? "checked" : ""}>${esc(t)}</label>`).join("")}</div>
+  <div class="group" style="margin-top:18px"><label class="tick"><input type="checkbox" id="m_consent" ${m.id ? "checked" : ""}><span>List me on ce-net, so people looking for work or hiring can find this profile and message me. I can hide or delete it any time.</span></label></div>
+  <div class="actions"><button class="btn soft" id="closeS">Cancel</button><button class="btn" id="m_save">Save</button></div><p class="note" id="m_msg"></p>`);
+  const grab = sel => [...document.querySelectorAll(sel)].map(r => { const o = {detail: ""}; r.querySelectorAll("input").forEach(x => o[x.dataset.k] = x.value.trim()); return o; }).filter(o => o.title || o.org);
+  const add = (box, kind) => { const n = document.getElementById(box); n.insertAdjacentHTML("beforeend", role({title: "", org: "", when: ""}, n.children.length, kind)); };
+  document.getElementById("m_addexp").onclick = () => add("m_exp", "exp");
+  document.getElementById("m_addedu").onclick = () => add("m_edu", "edu");
+  document.getElementById("m_save").onclick = async () => {
+    const v = id => document.getElementById(id).value.trim();
+    Object.assign(d, {name: v("m_name"), headline: v("m_head"), location: v("m_loc"), about: v("m_about"), skills: v("m_skills").split(",").map(x => x.trim()).filter(Boolean),
+      experience: grab("[data-exp]").map((e, i) => Object.assign(e, {detail: (d.experience[i] || {}).detail || ""})), education: grab("[data-edu]"), linkedin: v("m_li"), email: v("m_email"),
+      open_to: [...document.querySelectorAll("[data-opento]:checked")].map(x => x.dataset.opento)});
+    if (d.linkedin && !/^https?:/.test(d.linkedin)) d.linkedin = "https://" + d.linkedin;
+    save();
+    if (!d.name) { toast("Add your name"); return; }
+    if (!document.getElementById("m_consent").checked) { closeSheet(); render(); toast(m.id ? "Saved on this phone; tick List me to update ce-net" : "Saved on this phone only"); return; }
+    const msg = document.getElementById("m_msg"); msg.textContent = "Saving to ce-net…";
+    try { const r = await api("POST", "/profile", Object.assign({consent: true, listed: true}, d, m.id ? {id: m.id} : {}), m.key || undefined);
+      if (r.key) { m.id = r.id; m.key = r.key; } save(); closeSheet(); render(); toast("You're listed on ce-net");
+    } catch (e) { msg.textContent = "Not saved online: " + e.message; }
+  };
+}
+function viewFind() {
+  setTitle("Find", findMode === "people" ? "People open to work, hiring or projects" : "Open jobs");
+  return `<div class="seg" style="margin-top:10px"><button data-fmode="people" class="${findMode === "people" ? "on" : ""}">People</button><button data-fmode="jobs" class="${findMode === "jobs" ? "on" : ""}">Jobs</button></div>
+  <div class="actions"><button class="btn" data-act="postjob">Post a job</button><button class="btn soft" data-act="seekwork">Looking for work</button></div>
+  <div class="search remote"><input type="search" aria-label="Search people or jobs" id="findQ" placeholder="${findMode === "people" ? "Skill, role, city" : "Job, skill, city"}" value="${esc(findQ)}"></div>
+  ${findMode === "people" ? `<label for="findOpen">Availability</label><select id="findOpen"><option value="">Everyone</option>${Object.entries(OPEN_TO).map(([k, v]) => `<option value="${k}" ${findOpen === k ? "selected" : ""}>${esc(v)}</option>`).join("")}</select>` : ""}
+  <div class="actions"><button class="btn soft" data-act="savesearch">Save search</button></div>
+  ${(db.savedSearches || []).map((x, i) => `<div class="item plain"><button class="btn soft grow" data-savedsearch="${i}">${esc(x.mode === "jobs" ? "Jobs" : "People")}: ${esc(x.q || "All")}${x.open ? " · " + esc(OPEN_TO[x.open] || "") : ""}</button><button class="btn soft" data-removesearch="${i}" aria-label="Remove saved search">×</button></div>`).join("")}
+  <div id="findR" aria-live="polite"><div class="empty note">Searching…</div></div>`;
+}
+let findRows = [];
+async function findRun() {
+  const box = document.getElementById("findR"); if (!box) return;
+  const request = ++findRequest, mode = findMode, q = findQ, availability = findOpen;
+  box.innerHTML = `<div class="empty note">Searching…</div>`;
+  try { const r = await api("GET", (findMode === "people" ? "/search?q=" : "/jobs?q=") + encodeURIComponent(findQ) + (findMode === "people" && findOpen ? "&open_to=" + encodeURIComponent(findOpen) : ""));
+    if (request !== findRequest || mode !== findMode || q !== findQ || availability !== findOpen || document.getElementById("findR") !== box) return;
+    findRows = findMode === "people" ? r.people : r.jobs; if (!document.getElementById("findR")) return;
+    if (!findRows.length) { box.innerHTML = `<div class="empty note">${findQ ? "No match yet." : findMode === "people" ? "No one is listed yet. Be the first: make your profile under Me." : "No open jobs yet. Post the first one."}</div>`; return; }
+    box.innerHTML = `<div class="group">` + findRows.map((x, i) => findMode === "people"
+      ? `<button class="item" data-found="${i}">${avatar({id: x.id, name: x.name})}<div class="grow"><div class="name">${esc(x.name)}</div><div class="meta">${esc(x.headline || x.skills.join(", "))}</div><div class="meta">${esc([x.location, ...x.open_to.map(o => OPEN_TO[o])].filter(Boolean).join(" · "))}</div></div>${ICON.chev}</button>`
+      : `<button class="item" data-found="${i}"><div class="grow"><div class="name">${esc(x.title)}</div><div class="meta">${esc([x.org, x.location].filter(Boolean).join(" · "))}</div><div class="meta">${esc(x.skills.join(", "))}</div></div>${ICON.chev}</button>`).join("") + `</div>`;
+  } catch (e) { if (request === findRequest && document.getElementById("findR") === box && q === findQ && mode === findMode && availability === findOpen) box.innerHTML = `<div class="empty note">Search didn't answer: ${esc(e.message)}</div>`; }
+}
+function sheetFound(x) {
+  const isP = findMode === "people";
+  const top = isP ? `<div class="profile">${avatar({id: x.id, name: x.name})}<h2>${esc(x.name)}</h2><div class="meta">${esc(x.headline)}</div><div class="meta">${esc(x.location)}</div>${x.open_to.length ? `<div class="chips" style="justify-content:center">${x.open_to.map(o => `<span class="chip">${esc(OPEN_TO[o])}</span>`).join("")}</div>` : ""}</div>`
+    : `<h2>${esc(x.title)}</h2><div class="meta" style="white-space:normal">${esc([x.org, x.location, x.poster && "posted by " + x.poster].filter(Boolean).join(" · "))}</div>`;
+  const facts = isP ? [x.about && ["About", x.about], x.skills.length && ["Skills", x.skills.join(", ")], x.experience.length && ["Experience", x.experience.map(e => [e.title, e.org, e.when].filter(Boolean).join(" · ")).join("\n")], x.education.length && ["Education", x.education.map(e => [e.org, e.title, e.when].filter(Boolean).join(" · ")).join("\n")]]
+    : [x.detail && ["The job", x.detail], x.skills.length && ["Skills", x.skills.join(", ")]];
+  const d = me().draft;
+  openSheet(top + `<div class="facts">${facts.filter(Boolean).map(([k, v]) => `<div class="fact"><small>${k}</small><div>${esc(v)}</div></div>`).join("")}</div>
+  ${isP && x.linkedin ? `<a class="btn soft wide" style="display:block;text-align:center;text-decoration:none;margin-top:12px" href="${esc(x.linkedin)}" target="_blank" rel="noopener">Open LinkedIn</a>` : ""}
+  <label>${isP ? "Write to " + esc(x.name.split(" ")[0]) : "Reply to this job"}</label><textarea id="w_text" placeholder="${isP ? "Say who you are and what you'd like to work on together" : "Say who you are and why you fit"}"></textarea>
+  <div class="row" style="margin-top:8px"><input id="w_name" placeholder="Your name" value="${esc(d.name)}"><input id="w_email" type="email" placeholder="Your email" value="${esc(d.email)}"></div>
+  <input id="w_site" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
+  <div class="actions">${isP ? `<button class="btn soft" id="w_keep">Add to my people</button>` : `<button class="btn soft" id="closeS">Close</button>`}<button class="btn" id="w_send">Send</button></div>`);
+  document.getElementById("w_send").onclick = async () => { const v = id => document.getElementById(id).value.trim();
+    try { await api("POST", "/message", {to_kind: isP ? "profile" : "job", to_id: x.id, from_name: v("w_name"), from_email: v("w_email"), from_profile: me().id, text: v("w_text"), website: v("w_site")}); closeSheet(); toast("Sent"); }
+    catch (e) { toast(e.message); } };
+  const k = document.getElementById("w_keep");
+  if (k) k.onclick = () => { if (db.people.some(p => p.found === x.id)) { toast("Already in your people"); return; }
+    db.people.push({id: uid(), found: x.id, name: x.name, company: (x.experience[0] || {}).org || "", role: x.headline, where: "Found on ce-net", metAt: today0(), notes: x.about || "", tags: x.skills.join(", "), priority: "B", cadence: 0, channels: [{kind: "linkedin", value: x.linkedin || ""}], touches: [], created: Date.now()});
+    save(); toast("Added to your people"); };
+}
+function sheetPostJob() {
+  const d = me().draft;
+  openSheet(`<h2>Post a job</h2><label>Job title</label><input id="j_title" placeholder="e.g. PCB designer for a robot arm">
+  <label>Company</label><input id="j_org"><label>Where</label><input id="j_loc" placeholder="City, or Remote">
+  <label>What the work is</label><textarea id="j_detail"></textarea><label>Skills, separated by commas</label><input id="j_skills">
+  <label>Your name</label><input id="j_poster" value="${esc(d.name)}"><label>Email for replies (never shown)</label><input id="j_email" type="email" value="${esc(d.email)}">
+  <div class="actions"><button class="btn soft" id="closeS">Cancel</button><button class="btn" id="j_save">Post</button></div>`);
+  document.getElementById("j_save").onclick = async () => { const v = id => document.getElementById(id).value.trim();
+    try { const r = await api("POST", "/job", {title: v("j_title"), org: v("j_org"), location: v("j_loc"), detail: v("j_detail"), skills: v("j_skills").split(",").map(x => x.trim()).filter(Boolean), poster: v("j_poster"), email: v("j_email")});
+      me().jobs.push({id: r.id, key: r.key, title: v("j_title")}); save(); closeSheet(); render(); toast("Job posted"); } catch (e) { toast(e.message); } };
+}
+document.addEventListener("click", async e => {
+  const a = e.target.closest("[data-act]"); const k = a && a.dataset.act;
+  if (k === "li") return sheetImport();
+  if (k === "resolve") return sheetResolve();
+  if (k === "mehand" || k === "meedit") return sheetMeEdit();
+  if (k === "postjob") return sheetPostJob();
+  if (k === "seekwork") { const d = me().draft; d.open_to = [...new Set([...(d.open_to || []), "work"])]; save(); return sheetMeEdit(); }
+  if (k === "savesearch") {
+    const item = {mode: findMode, q: findQ.trim(), open: findMode === "people" ? findOpen : ""};
+    db.savedSearches = [item, ...(db.savedSearches || []).filter(x => x.mode !== item.mode || x.q !== item.q || x.open !== item.open)].slice(0, 20);
+    if (save()) { render(); toast("Search saved"); } return;
+  }
+  const saved = e.target.closest("[data-savedsearch]");
+  if (saved) { const x = (db.savedSearches || [])[Number(saved.dataset.savedsearch)]; if (!x) return;
+    findMode = x.mode === "jobs" ? "jobs" : "people"; findQ = String(x.q || ""); findOpen = OPEN_TO[x.open] ? x.open : ""; render(); return; }
+  const removeSearch = e.target.closest("[data-removesearch]");
+  if (removeSearch) { db.savedSearches.splice(Number(removeSearch.dataset.removesearch), 1); save(); render(); return; }
+  if (k === "mehide" || k === "medel") { const m = me();
+    if (!confirm(k === "medel" ? "Delete your profile and its messages from ce-net? Your draft stays on this phone." : "Stop listing you? People won't find you until you list again.")) return;
+    try { if (k === "medel") await api("DELETE", "/profile/" + m.id, null, m.key); else await api("POST", "/profile", Object.assign({consent: true, listed: false, id: m.id}, m.draft), m.key);
+      m.id = ""; m.key = ""; save(); render(); toast(k === "medel" ? "Deleted from ce-net" : "No longer listed"); } catch (err) { toast(err.message); }
+    return; }
+  const fm = e.target.closest("[data-fmode]"); if (fm) { findMode = fm.dataset.fmode; render(); return; }
+  const f = e.target.closest("[data-found]"); if (f) { sheetFound(findRows[+f.dataset.found]); return; }
+  const jc = e.target.closest("[data-jobclose]"); if (jc) { const m = me(), j = m.jobs.find(x => x.id === jc.dataset.jobclose);
+    try { await api("DELETE", "/job/" + j.id, null, j.key); m.jobs = m.jobs.filter(x => x !== j); save(); render(); toast("Job closed"); } catch (err) { toast(err.message); } }
+});
+document.addEventListener("change", e => { if (e.target.id === "findOpen") { findOpen = e.target.value; findRun(); } });
+document.addEventListener("input", e => { if (e.target.id !== "findQ") return; findQ = e.target.value; clearTimeout(findT); findT = setTimeout(findRun, 300); });
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+render();
+</script>
+</body>
+</html>

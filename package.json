@@ -1,0 +1,13 @@
+{
+  "name": "network-keeper",
+  "version": "0.1.0",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "scripts": {
+    "start": "python3 -m http.server 8949 --bind 127.0.0.1 --directory app",
+    "test": "node tools/test_capture.cjs && node tools/test_aggregate.cjs && node tools/test_linkedin.cjs && node tools/test_find.cjs && node --test edge/test_worker.mjs"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}

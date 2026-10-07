@@ -137,6 +137,7 @@ label{display:block;font-size:13px;font-weight:600;color:var(--sub);margin:18px 
 <div class="toast" id="toast"></div>
 <script src="linkedin.js"></script>
 <script src="aggregate.js"></script>
+<script src="discovery.js"></script>
 <script src="capture.js"></script>
 <script src="capture-ui.js"></script>
 <script>
@@ -220,6 +221,7 @@ const byId = id => db.people.find(p => p.id === id);
 
 // ---------- views ----------
 function render() {
+  KeeperDiscovery.stop();
   document.querySelectorAll("nav.tabs button").forEach(b => b.classList.toggle("on", b.dataset.tab === tab));
   document.getElementById("fab").style.display = ["today", "people"].includes(tab) ? "" : "none";
   const v = document.getElementById("view");
@@ -698,8 +700,9 @@ function sheetMeEdit() {
   };
 }
 function viewFind() {
+  if (findMode === "posts") { setTitle("Discover", "Public posts from X, Reddit and LinkedIn"); return `<div class="seg"><button data-fmode="people">People</button><button data-fmode="jobs">Jobs</button><button data-fmode="posts" class="on">Discover</button></div><div id="discoveryFeed"></div>`; }
   setTitle("Find", findMode === "people" ? "People open to work, hiring or projects" : "Open jobs");
-  return `<div class="seg" style="margin-top:10px"><button data-fmode="people" class="${findMode === "people" ? "on" : ""}">People</button><button data-fmode="jobs" class="${findMode === "jobs" ? "on" : ""}">Jobs</button></div>
+  return `<div class="seg" style="margin-top:10px"><button data-fmode="people" class="${findMode === "people" ? "on" : ""}">People</button><button data-fmode="jobs" class="${findMode === "jobs" ? "on" : ""}">Jobs</button><button data-fmode="posts">Discover</button></div>
   <div class="actions"><button class="btn" data-act="postjob">Post a job</button><button class="btn soft" data-act="seekwork">Looking for work</button></div>
   <div class="search remote"><input type="search" aria-label="Search people or jobs" id="findQ" placeholder="${findMode === "people" ? "Skill, role, city" : "Job, skill, city"}" value="${esc(findQ)}"></div>
   ${findMode === "people" ? `<label for="findOpen">Availability</label><select id="findOpen"><option value="">Everyone</option>${Object.entries(OPEN_TO).map(([k, v]) => `<option value="${k}" ${findOpen === k ? "selected" : ""}>${esc(v)}</option>`).join("")}</select>` : ""}
@@ -709,6 +712,7 @@ function viewFind() {
 }
 let findRows = [];
 async function findRun() {
+  if (findMode === "posts") { const feed = document.getElementById("discoveryFeed"); if (feed) await KeeperDiscovery.mount(feed); return; }
   const box = document.getElementById("findR"); if (!box) return;
   const request = ++findRequest, mode = findMode, q = findQ, availability = findOpen;
   box.innerHTML = `<div class="empty note">Searching…</div>`;

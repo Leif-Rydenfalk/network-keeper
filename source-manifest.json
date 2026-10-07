@@ -1,8 +1,16 @@
 {
   "files": [
     {
+      "path": "app/discovery.js",
+      "sha256": "6231dd8debb6e797d46b2a24ae0bbb3a07aa2ac472c1da39846592fca28ec355"
+    },
+    {
+      "path": "app/discovery.json",
+      "sha256": "af3ab806ec4e617205b5c7e2e567d313ee0e98d1facd92948b53bbd8944dae92"
+    },
+    {
       "path": "app/index.html",
-      "sha256": "21ce5532cd1369de103293cff040671b1f2a08ab029310bff0799c7157b93dc3"
+      "sha256": "b8a0b6b521047e99c0c3ce18b95b743b106cec546fe273ae11d6744d79c173a0"
     },
     {
       "path": "app/aggregate.js",
@@ -34,7 +42,7 @@
     },
     {
       "path": "app/sw.js",
-      "sha256": "b6b61076f6a1594636f826b7c48c8f08cc96fcf2eaf84ee1ce74f416b283b187"
+      "sha256": "aa1bfbf91a588a7f649feef13599adcbb8507e9fc437439fbf92716a8303fb6f"
     },
     {
       "path": "app/LICENSE",
@@ -115,6 +123,14 @@
     {
       "path": "tools/test_find.cjs",
       "sha256": "369eed6de776758f6fd55fbdcb1ee23877b0dd39e4854c04683e9ea35812f4cc"
+    },
+    {
+      "path": "tools/test_discovery.cjs",
+      "sha256": "fed8289ef27bfb718f3eb1aa8fb3791a0a4a2a4d98b92095deefe81af0edd729"
+    },
+    {
+      "path": "tools/import_discovery.cjs",
+      "sha256": "690a1ac170e45fb55cfcc4ceea93b7a304daf8c0a9d963c6d7a70eeabc6dfb09"
     },
     {
       "path": "tools/vendor_ocr.py",

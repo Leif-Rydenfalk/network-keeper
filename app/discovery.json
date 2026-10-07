@@ -1,0 +1,170 @@
+{
+  "schema": 1,
+  "posts": [
+    {
+      "platform": "linkedin",
+      "id": "linkedin:7442873082027012096",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7442873082027012096/",
+      "title": "Join the Team - Paddington Robotics",
+      "author": "Paddington Robotics",
+      "observed_at": "2026-10-07T14:38:55.451Z",
+      "published_at": null,
+      "evidence": "page_read",
+      "visibility": "public"
+    },
+    {
+      "platform": "reddit",
+      "id": "reddit:1vszgu4",
+      "url": "https://www.reddit.com/r/javascriptjobs/comments/1vszgu4/",
+      "title": "[For Hire] Senior Full-Stack / Product Engineer — Available for Remote Work",
+      "author": "kingomost",
+      "observed_at": "2026-10-07T14:38:55.451Z",
+      "published_at": null,
+      "evidence": "page_read",
+      "visibility": "public"
+    },
+    {
+      "platform": "x",
+      "id": "x:2041186810655883374",
+      "url": "https://x.com/SkydioHQ/status/2041186810655883374",
+      "title": "NEWS: Now hiring in Zurich.",
+      "author": "Skydio",
+      "observed_at": "2026-10-07T14:38:55.451Z",
+      "published_at": null,
+      "evidence": "search_result",
+      "visibility": "public"
+    },
+    {
+      "platform": "x",
+      "id": "x:2106859262836437326",
+      "url": "https://x.com/konstantinsaifo/status/2106859262836437326",
+      "title": "How many parts does it take to draw a rocket engine? Claude Opus 5.5 modeled 266 of them for a",
+      "author": "konstantinsaifo",
+      "observed_at": "2026-10-06T03:23:43.000Z",
+      "published_at": "2026-10-04T21:29:26.000Z",
+      "evidence": "page_read",
+      "visibility": "public"
+    },
+    {
+      "platform": "x",
+      "id": "x:2107149922394874095",
+      "url": "https://x.com/ATinyGreenCell/status/2107149922394874095",
+      "title": "3D printers have now become zero-skill infrastructure when connected to an Ai. OpenSCAD + PrusaLink + Claude is a miracle",
+      "author": "ATinyGreenCell",
+      "observed_at": "2026-10-06T00:10:50.000Z",
+      "published_at": "2026-10-05T16:44:25.000Z",
+      "evidence": "page_read",
+      "visibility": "public"
+    },
+    {
+      "platform": "x",
+      "id": "x:2106507258645614916",
+      "url": "https://x.com/10_X_eng/status/2106507258645614916",
+      "title": "Onshape should have just given me the pro plan shouldn't they. 🤣🤣🤣🤣",
+      "author": "10_X_eng",
+      "observed_at": "2026-10-05T14:38:20.000Z",
+      "published_at": "2026-10-03T22:10:42.000Z",
+      "evidence": "page_read",
+      "visibility": "public"
+    },
+    {
+      "platform": "x",
+      "id": "x:2107044864038728089",
+      "url": "https://x.com/konstantinsaifo/status/2107044864038728089",
+      "title": "I asked Claude Opus 5.5 to design a robot spider with no CAD software. 500 parts. 30 joints. 6 legs,",
+      "author": "konstantinsaifo",
+      "observed_at": "2026-10-05T14:38:20.000Z",
+      "published_at": "2026-10-05T09:46:57.000Z",
+      "evidence": "page_read",
+      "visibility": "public"
+    },
+    {
+      "platform": "x",
+      "id": "x:2106802056002675126",
+      "url": "https://x.com/parthingle_x/status/2106802056002675126",
+      "title": "I’m in San Francisco this week situated at @spc If you’re building robots, work in manufacturing, or want to discuss",
+      "author": "parthingle_x",
+      "observed_at": "2026-10-05T07:48:46.000Z",
+      "published_at": "2026-10-04T17:42:07.000Z",
+      "evidence": "page_read",
+      "visibility": "public"
+    },
+    {
+      "platform": "x",
+      "id": "x:2106809853347868863",
+      "url": "https://x.com/suren_at/status/2106809853347868863",
+      "title": "This is awesome ~ Recently I’ve been using @ForgeCAD from @ruben_kostard , and I love it. It’s been obvious for",
+      "author": "suren_at",
+      "observed_at": "2026-10-05T07:48:46.000Z",
+      "published_at": "2026-10-04T18:13:06.000Z",
+      "evidence": "page_read",
+      "visibility": "public"
+    },
+    {
+      "platform": "x",
+      "id": "x:2106258264476561701",
+      "url": "https://x.com/gewuerleo/status/2106258264476561701",
+      "title": "Codex and Claude can now directly invoke CAD: http:// ClassCAD.ai is now live We just finished chatting about how Flux",
+      "author": "gewuerleo",
+      "observed_at": "2026-10-05T04:36:08.000Z",
+      "published_at": "2026-10-03T05:41:17.000Z",
+      "evidence": "page_read",
+      "visibility": "public"
+    },
+    {
+      "platform": "x",
+      "id": "x:2106301475261423651",
+      "url": "https://x.com/observie/status/2106301475261423651",
+      "title": "I don't do CAD anymore. Every part is a Python program that builds the model in memory using build123d, an",
+      "author": "observie",
+      "observed_at": "2026-10-05T04:36:08.000Z",
+      "published_at": "2026-10-03T08:32:59.000Z",
+      "evidence": "page_read",
+      "visibility": "public"
+    },
+    {
+      "platform": "x",
+      "id": "x:2106371475468882372",
+      "url": "https://x.com/10_X_eng/status/2106371475468882372",
+      "title": "Does anybody want to test run SteveCAD?",
+      "author": "10_X_eng",
+      "observed_at": "2026-10-05T04:36:08.000Z",
+      "published_at": "2026-10-03T13:11:08.000Z",
+      "evidence": "page_read",
+      "visibility": "public"
+    },
+    {
+      "platform": "x",
+      "id": "x:2106388904974913606",
+      "url": "https://x.com/earthtojake/status/2106388904974913606",
+      "title": "you should try text-to-cad! it's build123d with a bunch of extra tools to make it 10x faster and much easier",
+      "author": "earthtojake",
+      "observed_at": "2026-10-05T04:36:08.000Z",
+      "published_at": "2026-10-03T14:20:24.000Z",
+      "evidence": "page_read",
+      "visibility": "public"
+    },
+    {
+      "platform": "x",
+      "id": "x:2106786935951745338",
+      "url": "https://x.com/konstantinsaifo/status/2106786935951745338",
+      "title": "I asked Claude Opus 5.5 to CAD a Raptor 3 - 255 parts, real STEP file - both turbopumps, preburners,",
+      "author": "konstantinsaifo",
+      "observed_at": "2026-10-05T04:36:08.000Z",
+      "published_at": "2026-10-04T16:42:02.000Z",
+      "evidence": "page_read",
+      "visibility": "public"
+    },
+    {
+      "platform": "x",
+      "id": "x:2106874386204561515",
+      "url": "https://x.com/ctjlewis/status/2106874386204561515",
+      "title": "You know what, now that you mention it, I *did* notice that!",
+      "author": "ctjlewis",
+      "observed_at": "2026-10-05T04:36:08.000Z",
+      "published_at": "2026-10-04T22:29:32.000Z",
+      "evidence": "page_read",
+      "visibility": "public"
+    }
+  ]
+}
